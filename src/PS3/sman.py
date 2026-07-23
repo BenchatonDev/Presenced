@@ -52,9 +52,9 @@ class webMANParser(HTMLParser):
             self.checkTag = False
 
     def handle_data(self, data):
-        if not self.checkTag or self.ignoreChild != 0: return
+        if not self.checkTag or self.ignoreChild != 0 or not data.strip(): return
 
-        print("Data     :", data)
+        print("Data     :", data.strip())
 
 parser = webMANParser()
 
