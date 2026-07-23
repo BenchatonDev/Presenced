@@ -7,9 +7,8 @@ class webMANParser(HTMLParser):
     ignoreChild = 0
 
     def handle_starttag(self, tag, attrs):
-        if self.checkTag and tag != 'a': self.ignoreChild += 1; print(self.ignoreChild); return
+        if self.checkTag and tag != 'a': self.ignoreChild += 1;return
         if tag != 'a': return
-        self.ignoreChild = 0
 
         # Here we'll check for distinctive attributes of the tags we want
         # to retrieve data from i.e. CPU temps, current game, etc
@@ -48,14 +47,12 @@ class webMANParser(HTMLParser):
 
     def handle_endtag(self, tag):
             if not self.checkTag: return
-            print(self.ignoreChild)
-            if tag != 'a': self.ignoreChild -= 1;
+            if tag != 'a': self.ignoreChild -= 1; return
             
             self.checkTag = False
 
     def handle_data(self, data):
-        if not self.checkTag: return
-        if self.ignoreChild > 0: return
+        if not self.checkTag or self.ignoreChild != 0: return
 
         print("Data     :", data)
 
