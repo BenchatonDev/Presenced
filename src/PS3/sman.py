@@ -1,4 +1,5 @@
 from html.parser import HTMLParser
+import re
 
 PS3Data = {'TitleID': '',
            'TitleName': 'XMB',
@@ -65,21 +66,21 @@ class webMANParser(HTMLParser):
             case 1:
                 PS3Data['TitleID'] = data.strip()
             case 2:
-                PS3Data['TitleName'] = data.strip()
+                PS3Data['TitleName'] = re.search("(.+)[0-9]{2}.[0-9]{2}", data.strip()).group(1).strip()
             case 3:
-                PS3Data['CPUTemp']['C'] = data.strip().removeprefix('CPU: ').removesuffix('°C')
+                PS3Data['CPUTemp']['C'] = re.search("[0-9]+", data.strip()).group(0)
                 self.valueIndex += 1
             case 4:
-                PS3Data['RSXTemp']['C'] = data.strip().removeprefix('RSX: ').removesuffix('°C')
+                PS3Data['RSXTemp']['C'] = re.search("[0-9]+", data.strip()).group(0)
             case 5:
-                PS3Data['CPUTemp']['F'] = data.strip().removeprefix('CPU: ').removesuffix('°F')
+                PS3Data['CPUTemp']['F'] = re.search("[0-9]+", data.strip()).group(0)
                 self.valueIndex += 1
             case 6:
-                PS3Data['RSXTemp']['F'] = data.strip().removeprefix('RSX: ').removesuffix('°F')
+                PS3Data['RSXTemp']['F'] = re.search("[0-9]+", data.strip()).group(0)
             case 7:
-                PS3Data['FanSpeed'] = data.strip()
+                PS3Data['FanSpeed'] = re.search("[0-9]+", data.strip()).group(0)
             case 8:
-                PS3Data['Firmware'] = data.strip()
+                PS3Data['Firmware'] = ' '.join(re.search("[0-9].[0-9]{2}(.*)", data.strip()).group(0).split(' ')[0:2])
 
 parser = webMANParser()
 
