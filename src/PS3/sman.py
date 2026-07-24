@@ -2,7 +2,7 @@ from html.parser import HTMLParser
 import re
 
 PS3Data = {'TitleID': '',
-           'TitleName': 'XMB',
+           'TitleName': 'PlayStation 1',
            'CPUTemp': {'C': '', 'F': ''},
            'RSXTemp': {'C': '', 'F': ''},
            'FanSpeed': '',
@@ -42,15 +42,20 @@ class webMANParser(HTMLParser):
                 self.checkTag = True
                 self.valueIndex = 5
 
+            # On the XMB ?
+            case {'href': '/games.ps3'}:
+                self.checkTag = True
+                self.valueIndex = 7
+
             # Fan Speed
             case {'href': '/cpursx.ps3?mode'}:
                 self.checkTag = True
-                self.valueIndex = 7
+                self.valueIndex = 8
 
             # Firmware version
             case {'href': '/setup.ps3'}:
                 self.checkTag = True
-                self.valueIndex = 8
+                self.valueIndex = 9
 
     def handle_endtag(self, tag):
             if not self.checkTag: return
@@ -66,7 +71,7 @@ class webMANParser(HTMLParser):
             case 1:
                 PS3Data['TitleID'] = data.strip()
             case 2:
-                PS3Data['TitleName'] = re.search("(.+)[0-9]{2}.[0-9]{2}", data.strip()).group(1).strip() if re.search("(.+)[0-9]{2}.[0-9]{2}", data.strip()).group(1) != None else data.strip()
+                PS3Data['TitleName'] = re.search("(.+)[0-9]{2}.[0-9]{2}", data.strip()).group(1).strip() if re.search("(.+)[0-9]{2}.[0-9]{2}", data.strip()) != None else data.strip()
             case 3:
                 PS3Data['CPUTemp']['C'] = re.search("[0-9]+", data.strip()).group(0)
                 self.valueIndex += 1
@@ -78,8 +83,11 @@ class webMANParser(HTMLParser):
             case 6:
                 PS3Data['RSXTemp']['F'] = re.search("[0-9]+", data.strip()).group(0)
             case 7:
-                PS3Data['FanSpeed'] = re.search("[0-9]+", data.strip()).group(0)
+                if re.search("XMB", data.strip()) == 'XMB':
+                    PS3Data['TitleName'] = 'XMB'
             case 8:
+                PS3Data['FanSpeed'] = re.search("[0-9]+", data.strip()).group(0)
+            case 9:
                 PS3Data['Firmware'] = ' '.join(re.search("[0-9].[0-9]{2}(.*)", data.strip()).group(0).split(' ')[0:2])
 
 parser = webMANParser()
