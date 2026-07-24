@@ -66,7 +66,7 @@ class webMANParser(HTMLParser):
             case 1:
                 PS3Data['TitleID'] = data.strip()
             case 2:
-                PS3Data['TitleName'] = re.search("(.+)[0-9]{2}.[0-9]{2}", data.strip()).group(1).strip()
+                PS3Data['TitleName'] = re.search("(.+)[0-9]{2}.[0-9]{2}", data.strip()).group(1).strip() if re.search("(.+)[0-9]{2}.[0-9]{2}", data.strip()).group(1) != None else data.strip()
             case 3:
                 PS3Data['CPUTemp']['C'] = re.search("[0-9]+", data.strip()).group(0)
                 self.valueIndex += 1
