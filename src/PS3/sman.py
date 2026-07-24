@@ -83,7 +83,7 @@ class webMANParser(HTMLParser):
             case 6:
                 PS3Data['RSXTemp']['F'] = re.search("[0-9]+", data.strip()).group(0)
             case 7:
-                if re.search("XMB", data.strip()) == 'XMB':
+                if re.search("XMB", data.strip()):
                     PS3Data['TitleName'] = 'XMB'
             case 8:
                 PS3Data['FanSpeed'] = re.search("[0-9]+", data.strip()).group(0)
