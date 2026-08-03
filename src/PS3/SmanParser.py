@@ -7,6 +7,8 @@ def SmanHTMLParser(html : str):
     SmanPage = BeautifulSoup(html, 'html.parser')
     SmanContent = SmanPage.find("div", id="content")
 
+    if not SmanContent: return {}
+
     PS3Data = {'TitleID': '', 'TitleName': '', 'CPUTemp': {'C': '', 'F': ''},
                'RSXTemp': {'C': '', 'F': ''}, 'FanSpeed': '', 'Firmware': ''}
 
@@ -39,11 +41,20 @@ def SmanHTMLParser(html : str):
         PS3Data['TitleID'] = "XMB"
         PS3Data['TitleName'] = "XMB"
 
-    print(PS3Data)
+    # For the CPU and RSX temps we first isolate the IC's part from the <a> tag containing both
+    # then we use a second regular expression on the result to extract just the raw numbers
+    TempStr = SmanContent.find("a", href="/cpursx.ps3?up").text
+    PS3Data['CPUTemp']['C'] = re.search("[0-9]+" ,re.search("CPU(.+?)C", TempStr).group(0)).group(0)
+    PS3Data['RSXTemp']['C'] = re.search("[0-9]+" ,re.search("RSX(.+?)C", TempStr).group(0)).group(0)
+
+    TempStr = SmanContent.find("a", href="/cpursx.ps3?dn").text
+    PS3Data['CPUTemp']['F'] = re.search("[0-9]+" ,re.search("CPU(.+?)F", TempStr).group(0)).group(0)
+    PS3Data['RSXTemp']['F'] = re.search("[0-9]+" ,re.search("RSX(.+?)F", TempStr).group(0)).group(0)
+
     return PS3Data
 
 with open("webMAN-page/webMAN.html", "r") as file:
-    SmanHTMLParser(file.read())
+    print(SmanHTMLParser(file.read()))
 
 """
 
