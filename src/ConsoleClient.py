@@ -5,10 +5,11 @@ ActiveClients = []
 
 class ConsoleClient:
 
-    def __init__(self, ipAddress: str):
+    def __init__(self, IpAddress: str):
         """ This Function just set the IP address to be used for console communications, likely from a
         config handler or smt like that which has yet to be implemented, just like 99% of this class """
-        self.ipAddress = ipAddress
+        self.IpAddress = IpAddress
+        self.ClientData = {}
 
         Clients.append(self)
 
