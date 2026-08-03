@@ -1,14 +1,51 @@
-from html.parser import HTMLParser
+from bs4 import BeautifulSoup
 import re
 
 # TODO: Rewrite to use beautifulsoup
 
-PS3Data = {'TitleID': '',
-           'TitleName': 'PlayStation 1',
-           'CPUTemp': {'C': '', 'F': ''},
-           'RSXTemp': {'C': '', 'F': ''},
-           'FanSpeed': '',
-           'Firmware': ''}
+def SmanHTMLParser(html : str):
+    SmanPage = BeautifulSoup(html, 'html.parser')
+    SmanContent = SmanPage.find("div", id="content")
+
+    PS3Data = {'TitleID': '', 'TitleName': '', 'CPUTemp': {'C': '', 'F': ''},
+               'RSXTemp': {'C': '', 'F': ''}, 'FanSpeed': '', 'Firmware': ''}
+
+    # The /browser.ps3$slaunch href is only present when you're 
+    # On the XMB so this is equivalent to an if InGame: statement
+    if not SmanContent.find("a", href="/browser.ps3$slaunch"):
+        # PS2 Classics completely unload WebMan and PS1 Classics don't create
+        # this specific <a> tag, so this equivalent to an if PS3/PSP: statement
+        if SmanContent.find("a", target="_blank"):
+            PS3Data['TitleID'] = SmanContent.find("a", target="_blank").text
+
+            # The TitleName <a> tag is always the next one to the title ID but can also
+            # Be identified from it's href which always starts by "http://google.com"
+            TitleName = SmanContent.find("a", target="_blank").find_next_sibling().text
+
+            # All PS3 / PSP games have a version number that goes XX.XX, the regular
+            # Expression below ignores the whole string exept the end checking if the
+            # String ends in XX.XX, if it does we only keep the first part of it
+            HasVersionNumber = re.search("(.+)[0-9]{2}.[0-9]{2}", TitleName)
+            if HasVersionNumber:
+                TitleName = HasVersionNumber.group(1).strip()
+
+            PS3Data['TitleName'] = TitleName
+
+        else:
+            PS3Data['TitleID'] = "PS1"
+            PS3Data['TitleName'] = "PlayStation Classics"
+
+    else:
+        PS3Data['TitleID'] = "XMB"
+        PS3Data['TitleName'] = "XMB"
+
+    print(PS3Data)
+    return PS3Data
+
+with open("webMAN-page/webMAN.html", "r") as file:
+    SmanHTMLParser(file.read())
+
+"""
 
 class webMANParser(HTMLParser):
     checkTag = False
@@ -90,10 +127,4 @@ class webMANParser(HTMLParser):
                 PS3Data['FanSpeed'] = re.search("[0-9]+", data.strip()).group(0)
             case 9:
                 PS3Data['Firmware'] = ' '.join(re.search("[0-9].[0-9]{2}(.*)", data.strip()).group(0).split(' ')[0:2])
-
-parser = webMANParser()
-
-with open("webMAN-page/webMAN.html", "r") as file:
-    parser.feed(file.read())
-
-print(PS3Data)
+"""
