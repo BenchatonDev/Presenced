@@ -1,8 +1,6 @@
 from bs4 import BeautifulSoup
 import re
 
-# TODO: Rewrite to use beautifulsoup
-
 def SmanHTMLParser(html : str):
     SmanPage = BeautifulSoup(html, 'html.parser')
     SmanContent = SmanPage.find("div", id="content")
