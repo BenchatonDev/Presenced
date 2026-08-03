@@ -56,13 +56,13 @@ def SmanHTMLParser(html : str):
     PS3Data['FanSpeed'] = re.search("[0-9]+", TempStr).group(0)
 
     # Firmware version is annoying, the string we are looking for is the first
-    # Segment of the sequence before a line break so we extract that, then we look
+    # Segment of the sequence before the "PSID" string so we extract that, then we look
     # For the first occurence of the firmware version which is alway X.XX formated,
     # We only keep what comes after this sequence (including it self) and separate
     # The string at each space char, since the firmware type comes right after the
     # Version number we can then just join back the first 2 indexes of the split string
     # To get the exact firmware version and type formated like this: X.XX CEX / DEX
     TempStr = SmanContent.find("a", href="/setup.ps3").text
-    PS3Data['Firmware'] = ' '.join(re.search("[0-9].[0-9]{2}(.*)", re.search("(.+?)\n(.+?)", TempStr).group(1)).group(0).split(' ')[0:2])
+    PS3Data['Firmware'] = ' '.join(re.search("[0-9].[0-9]{2}(.*)", re.search("(.+?)PSID(.+?)", TempStr).group(1)).group(0).split(' ')[0:2])
 
     return PS3Data
