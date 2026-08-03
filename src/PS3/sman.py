@@ -1,6 +1,8 @@
 from html.parser import HTMLParser
 import re
 
+# TODO: Rewrite to use beautifulsoup
+
 PS3Data = {'TitleID': '',
            'TitleName': 'PlayStation 1',
            'CPUTemp': {'C': '', 'F': ''},
@@ -43,7 +45,7 @@ class webMANParser(HTMLParser):
                 self.valueIndex = 5
 
             # On the XMB ?
-            case {'href': '/games.ps3'}:
+            case {'href': '/browser.ps3$slaunch'}:
                 self.checkTag = True
                 self.valueIndex = 7
 
@@ -83,8 +85,7 @@ class webMANParser(HTMLParser):
             case 6:
                 PS3Data['RSXTemp']['F'] = re.search("[0-9]+", data.strip()).group(0)
             case 7:
-                if re.search("XMB", data.strip()):
-                    PS3Data['TitleName'] = 'XMB'
+                PS3Data['TitleName'] = 'XMB'
             case 8:
                 PS3Data['FanSpeed'] = re.search("[0-9]+", data.strip()).group(0)
             case 9:
