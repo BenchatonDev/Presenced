@@ -1,26 +1,26 @@
 # Config File Documentation
 
-The configuration for Presenced is represeted as a dictionary which allows it to easely be read or saved to a json file, the configuration as two main parts, the "General" part which stores settings that affect the whole program and the "Presence" part which stores settings in relation to how the Rich Presence will look on your discord profile. Additionally if a field preset in the `{Presence}Format` can't poll it's data from the `ConsoleClient` it will use strings set in a dictionary of the corresponding `ConsoleClient`'s name.
+The configuration for Presenced is represented as a dictionary which allows it to easily be read or saved to a JSON file. The configuration has two main parts: the "General" part, which stores settings that affect the whole program, and the "Presence" part, which stores settings in relation to how the Rich Presence will look on your Discord profile. Additionally, if a field present in `{Presence}Format` cannot poll its data from the `ConsoleClient`, it will use strings set in a dictionary under the corresponding `ConsoleClient`'s name.
 
 ## General
 
 - **AppID** *[STR]* : A Discord app ID created from the [Discord Developer Portal](https://discord.com/developers/applications/)
 - **DiscordPyToken** *[STR]* : A Discord user token, used to log into the account if the `Discord.py` backend is used (Not the default)
-- **PollInterval** *[INT]* : The time in seconds between console pings, manages how fast Presenced checks consoles for activity and updates relating data (Current game etc)
-- **ConsoleClients** *[STR]* | *[LIST]*: Which of the supported ConsoleClients to use (i.e. which consoles do you want to use with Presenced).
+- **PollInterval** *[INT]* : The time in seconds between console pings; manages how fast Presenced checks consoles for activity and updates related data (Current game, etc.)
+- **ConsoleClients** *[STR]* | *[LIST]*: Which of the supported ConsoleClients to use (i.e., which consoles you want to use with Presenced).
   <details>
     <summary>Click to see field options</summary>
 
     - *all* (***Default***) **➤** Use all supported ConsoleClients
-    - *[]* **➤** List of client names, supported list members are `"PS3"`
+    - *[]* **➤** List of client names; supported list members are `"PS3"`
 
   </details>
-- **PyPresenceBackend** *[BOOL]* : Wether or not to use `pyPresence` as the Rich Presence backend, `True` by default
+- **PyPresenceBackend** *[BOOL]* : Whether or not to use `pyPresence` as the Rich Presence backend (`True` by default)
 
 ## Presence
 
-- **UseCommonFormat** *[BOOL]* : Wether or not to use the same Presence config for every configured `ConsoleClient` (Layout / How fields are filled)
-- **ResetTimeOnAppChange** *[BOOL]* : Wether to display time since the currently in use `ConsoleClient` started being active or since the last Application Change (i.e. switching from game A to game B)
+- **UseCommonFormat** *[BOOL]* : Whether or not to use the same Presence config for every configured `ConsoleClient` (Layout / How fields are filled)
+- **ResetTimeOnAppChange** *[BOOL]* : Whether to display time since the currently used `ConsoleClient` started being active or since the last Application Change (i.e., switching from game A to game B)
 - <a id="common-format"></a> **CommonFormat** *[DICT]* : Decides how fields are filled for every configured `ConsoleClient`
   <details>
     <summary>Click to see subfields</summary>
@@ -29,9 +29,9 @@ The configuration for Presenced is represeted as a dictionary which allows it to
     <details>
         <summary>Click to see field options</summary>
 
-      - *console_name* (***Default***) **➤** Display's the currently active `ConsoleClient`'s name (i.e. `"PlayStation 3"`)
-      - *app_name* **➤** Display's the currently running app's name (i.e. `"XMB"`)
-      - *{customstring}* **➤** In the case you don't input any of the above the value of the field will be displayed, empty will fallback to the default value
+      - *console_name* (***Default***) **➤** Displays the currently active `ConsoleClient`'s name (i.e., `"PlayStation 3"`)
+      - *app_name* **➤** Displays the currently running app's name (i.e., `"XMB"`)
+      - *{customstring}* **➤** In case you don't input any of the above, the value of the field will be displayed; an empty value will fall back to the default value
     
     </details>
 
@@ -40,13 +40,13 @@ The configuration for Presenced is represeted as a dictionary which allows it to
     <details>
         <summary>Click to see field options</summary>
 
-      - *console_name* **➤** Display's the currently active `ConsoleClient`'s name (i.e. `"PlayStation 3"`)
-      - *network_name* **➤** Display's the in use online network's name determined by the `ConsoleClient`'s name (i.e. `"Pretendo Network"`), this option might use a predefined string if there is no way to poll it from the console (i.e. on PS3)
-      - *app_name* (***Default***) **➤** Display's the currently running app's name (i.e. `"XMB"`)
-      - *info_firmware* **➤** Display's the console's Firmware version (i.e. `"4.90 CEX"`), this option might use a predefined string if there is no way to poll it from the console (i.e. on Wii U)
-      - *info_network* **➤** Display's the user's online network ID (i.e. `"PNID : Benchatooo"`), this option might use a predefined string if there is no way to poll it from the console (i.e. on PS3)
-      - *info_hardware* **➤** Display's hardware information about the console (i.e. `"Cell: 65°C | RSX: 73°C"`) this option might use a predefined string if there is no way to poll it from the console (i.e. on Wii U)
-      - *{customstring}* **➤** In the case you don't input any of the above the value of the field will be displayed, empty means nothing to be displayed
+      - *console_name* **➤** Displays the currently active `ConsoleClient`'s name (i.e., `"PlayStation 3"`)
+      - *network_name* **➤** Displays the online network name in use, determined by the `ConsoleClient`'s name (i.e., `"Pretendo Network"`); this option might use a predefined string if there is no way to poll it from the console (i.e., on PS3)
+      - *app_name* (***Default***) **➤** Displays the currently running app's name (i.e., `"XMB"`)
+      - *info_firmware* **➤** Displays the console's firmware version (i.e., `"4.90 CEX"`); this option might use a predefined string if there is no way to poll it from the console (i.e., on Wii U)
+      - *info_network* **➤** Displays the user's online network ID (i.e., `"PNID : Benchatooo"`); this option might use a predefined string if there is no way to poll it from the console (i.e., on PS3)
+      - *info_hardware* **➤** Displays hardware information about the console (i.e., `"Cell: 65°C | RSX: 73°C"`); this option might use a predefined string if there is no way to poll it from the console (i.e., on Wii U)
+      - *{customstring}* **➤** In case you don't input any of the above, the value of the field will be displayed; an empty value means nothing will be displayed
     
     </details>
 
@@ -55,13 +55,13 @@ The configuration for Presenced is represeted as a dictionary which allows it to
     <details>
         <summary>Click to see field options</summary>
 
-      - *console_name* **➤** Display's the currently active `ConsoleClient`'s name (i.e. `"PlayStation 3"`)
-      - *network_name* **➤** Display's the in use online network's name determined by the `ConsoleClient`'s name (i.e. `"Pretendo Network"`), this option might use a predefined string if there is no way to poll it from the console (i.e. on PS3)
-      - *app_name* **➤** Display's the currently running app's name (i.e. `"XMB"`)
-      - *info_firmware* **➤** Display's the console's Firmware version (i.e. `"4.90 CEX"`), this option might use a predefined string if there is no way to poll it from the console (i.e. on Wii U)
-      - *info_network* (***Default***) **➤** Display's the user's online network ID (i.e. `"PNID : Benchatooo"`), this option might use a predefined string if there is no way to poll it from the console (i.e. on PS3)
-      - *info_hardware* **➤** Display's hardware information about the console (i.e. `"Cell: 65°C | RSX: 73°C"`) this option might use a predefined string if there is no way to poll it from the console (i.e. on Wii U)
-      - *{customstring}* **➤** In the case you don't input any of the above the value of the field will be displayed, empty means nothing to be displayed
+      - *console_name* **➤** Displays the currently active `ConsoleClient`'s name (i.e., `"PlayStation 3"`)
+      - *network_name* **➤** Displays the online network name in use, determined by the `ConsoleClient`'s name (i.e., `"Pretendo Network"`); this option might use a predefined string if there is no way to poll it from the console (i.e., on PS3)
+      - *app_name* **➤** Displays the currently running app's name (i.e., `"XMB"`)
+      - *info_firmware* **➤** Displays the console's firmware version (i.e., `"4.90 CEX"`); this option might use a predefined string if there is no way to poll it from the console (i.e., on Wii U)
+      - *info_network* (***Default***) **➤** Displays the user's online network ID (i.e., `"PNID : Benchatooo"`); this option might use a predefined string if there is no way to poll it from the console (i.e., on PS3)
+      - *info_hardware* **➤** Displays hardware information about the console (i.e., `"Cell: 65°C | RSX: 73°C"`); this option might use a predefined string if there is no way to poll it from the console (i.e., on Wii U)
+      - *{customstring}* **➤** In case you don't input any of the above, the value of the field will be displayed; an empty value means nothing will be displayed
 
     </details>
 
@@ -70,13 +70,13 @@ The configuration for Presenced is represeted as a dictionary which allows it to
     <details>
         <summary>Click to see field options</summary>
 
-      - *console_name* **➤** Display's the currently active `ConsoleClient`'s name (i.e. `"PlayStation 3"`)
-      - *network_name* **➤** Display's the in use online network's name determined by the `ConsoleClient`'s name (i.e. `"Pretendo Network"`), this option might use a predefined string if there is no way to poll it from the console (i.e. on PS3)
-      - *app_name* (***Default***) **➤** Display's the currently running app's name (i.e. `"XMB"`)
-      - *info_firmware* **➤** Display's the console's Firmware version (i.e. `"4.90 CEX"`), this option might use a predefined string if there is no way to poll it from the console (i.e. on Wii U)
-      - *info_network* **➤** Display's the user's online network ID (i.e. `"PNID : Benchatooo"`), this option might use a predefined string if there is no way to poll it from the console (i.e. on PS3)
-      - *info_hardware* **➤** Display's hardware information about the console (i.e. `"Cell: 65°C | RSX: 73°C"`) this option might use a predefined string if there is no way to poll it from the console (i.e. on Wii U)
-      - *{customstring}* **➤** In the case you don't input any of the above the value of the field will be displayed, empty means nothing to be displayed
+      - *console_name* **➤** Displays the currently active `ConsoleClient`'s name (i.e., `"PlayStation 3"`)
+      - *network_name* **➤** Displays the online network name in use, determined by the `ConsoleClient`'s name (i.e., `"Pretendo Network"`); this option might use a predefined string if there is no way to poll it from the console (i.e., on PS3)
+      - *app_name* (***Default***) **➤** Displays the currently running app's name (i.e., `"XMB"`)
+      - *info_firmware* **➤** Displays the console's firmware version (i.e., `"4.90 CEX"`); this option might use a predefined string if there is no way to poll it from the console (i.e., on Wii U)
+      - *info_network* **➤** Displays the user's online network ID (i.e., `"PNID : Benchatooo"`); this option might use a predefined string if there is no way to poll it from the console (i.e., on PS3)
+      - *info_hardware* **➤** Displays hardware information about the console (i.e., `"Cell: 65°C | RSX: 73°C"`); this option might use a predefined string if there is no way to poll it from the console (i.e., on Wii U)
+      - *{customstring}* **➤** In case you don't input any of the above, the value of the field will be displayed; an empty value means nothing will be displayed
     
     </details>
 
@@ -87,8 +87,8 @@ The configuration for Presenced is represeted as a dictionary which allows it to
 
       - *image_app* (***Default***) **➤** Uses the running app's icon determined by the `ConsoleClient`
       - *image_console* **➤** Uses the console's logo determined by the currently displayed `ConsoleClient`
-      - *image_network* **➤** Uses the currently displayed `ConsoleClient` to display the appropriate Multiplayer Network icon (i.e. Pretendo Network on Wii U), this option might use a predefined icon if there is no way to poll it from the console (i.e. on PS3)
-      - *{customurl}* **➤** In the case you don't input any of the above we'll try to use the string as an image url, if it's not one (i.e. empty string) then no image shall be displayed
+      - *image_network* **➤** Uses the currently displayed `ConsoleClient` to display the appropriate Multiplayer Network icon (i.e., Pretendo Network on Wii U); this option might use a predefined icon if there is no way to poll it from the console (i.e., on PS3)
+      - *{customurl}* **➤** In case you don't input any of the above, we'll try to use the string as an image URL; if it is not one (i.e., an empty string), then no image shall be displayed
     
     </details>
 
@@ -97,13 +97,13 @@ The configuration for Presenced is represeted as a dictionary which allows it to
     <details>
         <summary>Click to see field options</summary>
 
-      - *console_name* **➤** Display's the currently active `ConsoleClient`'s name (i.e. `"PlayStation 3"`)
-      - *network_name* **➤** Display's the in use online network's name determined by the `ConsoleClient`'s name (i.e. `"Pretendo Network"`), this option might use a predefined string if there is no way to poll it from the console (i.e. on PS3)
-      - *app_name* **➤** Display's the currently running app's name (i.e. `"XMB"`)
-      - *info_firmware* (***Default***) **➤** Display's the console's Firmware version (i.e. `"4.90 CEX"`), this option might use a predefined string if there is no way to poll it from the console (i.e. on Wii U)
-      - *info_network* **➤** Display's the user's online network ID (i.e. `"PNID : Benchatooo"`), this option might use a predefined string if there is no way to poll it from the console (i.e. on PS3)
-      - *info_hardware* **➤** Display's hardware information about the console (i.e. `"Cell: 65°C | RSX: 73°C"`) this option might use a predefined string if there is no way to poll it from the console (i.e. on Wii U)
-      -  *{customstring}* **➤** In the case you don't input any of the above the value of the field will be displayed, empty means nothing to be displayed
+      - *console_name* **➤** Displays the currently active `ConsoleClient`'s name (i.e., `"PlayStation 3"`)
+      - *network_name* **➤** Displays the online network name in use, determined by the `ConsoleClient`'s name (i.e., `"Pretendo Network"`); this option might use a predefined string if there is no way to poll it from the console (i.e., on PS3)
+      - *app_name* **➤** Displays the currently running app's name (i.e., `"XMB"`)
+      - *info_firmware* (***Default***) **➤** Displays the console's firmware version (i.e., `"4.90 CEX"`); this option might use a predefined string if there is no way to poll it from the console (i.e., on Wii U)
+      - *info_network* **➤** Displays the user's online network ID (i.e., `"PNID : Benchatooo"`); this option might use a predefined string if there is no way to poll it from the console (i.e., on PS3)
+      - *info_hardware* **➤** Displays hardware information about the console (i.e., `"Cell: 65°C | RSX: 73°C"`); this option might use a predefined string if there is no way to poll it from the console (i.e., on Wii U)
+      - *{customstring}* **➤** In case you don't input any of the above, the value of the field will be displayed; an empty value means nothing will be displayed
     
     </details>
 
@@ -114,8 +114,8 @@ The configuration for Presenced is represeted as a dictionary which allows it to
 
       - *image_app* **➤** Uses the running app's icon determined by the `ConsoleClient`
       - *image_console* (***Default***) **➤** Uses the console's logo determined by the currently displayed `ConsoleClient`
-      - *image_network* **➤** Uses the currently displayed `ConsoleClient` to display the appropriate Multiplayer Network icon (i.e. Pretendo Network on Wii U), this option might use a predefined icon if there is no way to poll it from the console (i.e. on PS3)
-      - *{customurl}* **➤** In the case you don't input any of the above we'll try to use the string as an image url, if it's not one (i.e. empty string) then no image shall be displayed
+      - *image_network* **➤** Uses the currently displayed `ConsoleClient` to display the appropriate Multiplayer Network icon (i.e., Pretendo Network on Wii U); this option might use a predefined icon if there is no way to poll it from the console (i.e., on PS3)
+      - *{customurl}* **➤** In case you don't input any of the above, we'll try to use the string as an image URL; if it is not one (i.e., an empty string), then no image shall be displayed
     
     </details>
 
@@ -129,9 +129,9 @@ The configuration for Presenced is represeted as a dictionary which allows it to
     <details>
         <summary>Click to see field options</summary>
 
-      - *console_name* (***Default***) **➤** Display's the currently active `ConsoleClient`'s name (i.e. `"PlayStation 3"`)
-      - *app_name* **➤** Display's the currently running app's name (i.e. `"XMB"`)
-      - *{customstring}* **➤** In the case you don't input any of the above the value of the field will be displayed, empty will fallback to the default value of *`console_name`*
+      - *console_name* (***Default***) **➤** Displays the currently active `ConsoleClient`'s name (i.e., `"PlayStation 3"`)
+      - *app_name* **➤** Displays the currently running app's name (i.e., `"XMB"`)
+      - *{customstring}* **➤** In case you don't input any of the above, the value of the field will be displayed; an empty value will fall back to the default value
     
     </details>
 
@@ -140,13 +140,13 @@ The configuration for Presenced is represeted as a dictionary which allows it to
     <details>
         <summary>Click to see field options</summary>
 
-      - *console_name* **➤** Display's the currently active `ConsoleClient`'s name (i.e. `"PlayStation 3"`)
-      - *network_name* **➤** Display's the in use online network's name determined by the `ConsoleClient`'s name (i.e. `"Playstation Network"`), Network Full Name is configured manualy as it can't be easely be polled from WebMAN
-      - *app_name* (***Default***) **➤** Display's the currently running app's name (i.e. `"XMB"`)
-      - *info_firmware* **➤** Display's the console's Firmware version (i.e. `"4.90 CEX"`)
-      - *info_network* **➤** Display's the user's online network ID (i.e. `"PSN : Benchatooo"`), Network Name and Network ID are configured manualy as they can't be easely be polled from WebMAN
-      - *info_hardware* **➤** Display's hardware information about the console (i.e. `"Cell: 65°C | RSX: 73°C"`)
-      - *{customstring}* **➤** In the case you don't input any of the above the value of the field will be displayed, empty means nothing to be displayed
+      - *console_name* **➤** Displays the currently active `ConsoleClient`'s name (i.e., `"PlayStation 3"`)
+      - *network_name* **➤** Displays the online network name in use, determined by the `ConsoleClient`'s name (i.e., `"PlayStation Network"`); Network Full Name is configured manually as it cannot easily be polled from WebMAN
+      - *app_name* (***Default***) **➤** Displays the currently running app's name (i.e., `"XMB"`)
+      - *info_firmware* **➤** Displays the console's firmware version (i.e., `"4.90 CEX"`)
+      - *info_network* **➤** Displays the user's online network ID (i.e., `"PSN : Benchatooo"`); Network Name and Network ID are configured manually as they cannot easily be polled from WebMAN
+      - *info_hardware* **➤** Displays hardware information about the console (i.e., `"Cell: 65°C | RSX: 73°C"`)
+      - *{customstring}* **➤** In case you don't input any of the above, the value of the field will be displayed; an empty value means nothing will be displayed
     
     </details>
 
@@ -155,13 +155,13 @@ The configuration for Presenced is represeted as a dictionary which allows it to
     <details>
         <summary>Click to see field options</summary>
 
-      - *console_name* **➤** Display's the currently active `ConsoleClient`'s name (i.e. `"PlayStation 3"`)
-      - *network_name* **➤** Display's the in use online network's name determined by the `ConsoleClient`'s name (i.e. `"Playstation Network"`), Network Full Name is configured manualy as it can't be easely be polled from WebMAN
-      - *app_name* **➤** Display's the currently running app's name (i.e. `"XMB"`)
-      - *info_firmware* **➤** Display's the console's Firmware version (i.e. `"4.90 CEX"`)
-      - *info_network* (***Default***) **➤** Display's the user's online network ID (i.e. `"PSN : Benchatooo"`), Network Name and Network ID are configured manualy as they can't be easely be polled from WebMAN
-      - *info_hardware* **➤** Display's hardware information about the console (i.e. `"Cell: 65°C | RSX: 73°C"`)
-      - *{customstring}* **➤** In the case you don't input any of the above the value of the field will be displayed, empty means nothing to be displayed
+      - *console_name* **➤** Displays the currently active `ConsoleClient`'s name (i.e., `"PlayStation 3"`)
+      - *network_name* **➤** Displays the online network name in use, determined by the `ConsoleClient`'s name (i.e., `"PlayStation Network"`); Network Full Name is configured manually as it cannot easily be polled from WebMAN
+      - *app_name* **➤** Displays the currently running app's name (i.e., `"XMB"`)
+      - *info_firmware* **➤** Displays the console's firmware version (i.e., `"4.90 CEX"`)
+      - *info_network* (***Default***) **➤** Displays the user's online network ID (i.e., `"PSN : Benchatooo"`); Network Name and Network ID are configured manually as they cannot easily be polled from WebMAN
+      - *info_hardware* **➤** Displays hardware information about the console (i.e., `"Cell: 65°C | RSX: 73°C"`)
+      - *{customstring}* **➤** In case you don't input any of the above, the value of the field will be displayed; an empty value means nothing will be displayed
 
     </details>
 
@@ -170,13 +170,13 @@ The configuration for Presenced is represeted as a dictionary which allows it to
     <details>
         <summary>Click to see field options</summary>
 
-      - *console_name* **➤** Display's the currently active `ConsoleClient`'s name (i.e. `"PlayStation 3"`)
-      - *network_name* **➤** Display's the in use online network's name determined by the `ConsoleClient`'s name (i.e. `"Playstation Network"`), Network Full Name is configured manualy as it can't be easely be polled from WebMAN
-      - *app_name* (***Default***) **➤** Display's the currently running app's name (i.e. `"XMB"`)
-      - *info_firmware* **➤** Display's the console's Firmware version (i.e. `"4.90 CEX"`)
-      - *info_network* **➤** Display's the user's online network ID (i.e. `"PSN : Benchatooo"`), Network Name and Network ID are configured manualy as they can't be easely be polled from WebMAN
-      - *info_hardware* **➤** Display's hardware information about the console (i.e. `"Cell: 65°C | RSX: 73°C"`)
-      - *{customstring}* **➤** In the case you don't input any of the above the value of the field will be displayed, empty means nothing to be displayed
+      - *console_name* **➤** Displays the currently active `ConsoleClient`'s name (i.e., `"PlayStation 3"`)
+      - *network_name* **➤** Displays the online network name in use, determined by the `ConsoleClient`'s name (i.e., `"PlayStation Network"`); Network Full Name is configured manually as it cannot easily be polled from WebMAN
+      - *app_name* (***Default***) **➤** Displays the currently running app's name (i.e., `"XMB"`)
+      - *info_firmware* **➤** Displays the console's firmware version (i.e., `"4.90 CEX"`)
+      - *info_network* **➤** Displays the user's online network ID (i.e., `"PSN : Benchatooo"`); Network Name and Network ID are configured manually as they cannot easily be polled from WebMAN
+      - *info_hardware* **➤** Displays hardware information about the console (i.e., `"Cell: 65°C | RSX: 73°C"`)
+      - *{customstring}* **➤** In case you don't input any of the above, the value of the field will be displayed; an empty value means nothing will be displayed
     
     </details>
 
@@ -187,8 +187,8 @@ The configuration for Presenced is represeted as a dictionary which allows it to
 
       - *image_app* (***Default***) **➤** Uses the running app's icon determined by the `ConsoleClient`
       - *image_console* **➤** Uses the console's logo determined by the currently displayed `ConsoleClient`
-      - *image_network* **➤** Uses the currently displayed `ConsoleClient` to display the appropriate Multiplayer Network icon (i.e. the PSN logo), Network icon has to be configured manualy as the in use multiplayer online network can't be easely be polled from WebMAN
-      - *{customurl}* **➤** In the case you don't input any of the above we'll try to use the string as an image url, if it's not one (i.e. empty string) then no image shall be displayed
+      - *image_network* **➤** Uses the currently displayed `ConsoleClient` to display the appropriate Multiplayer Network icon (i.e., the PSN logo); Network icon has to be configured manually as the multiplayer online network in use cannot easily be polled from WebMAN
+      - *{customurl}* **➤** In case you don't input any of the above, we'll try to use the string as an image URL; if it is not one (i.e., an empty string), then no image shall be displayed
     
     </details>
 
@@ -197,13 +197,13 @@ The configuration for Presenced is represeted as a dictionary which allows it to
     <details>
         <summary>Click to see field options</summary>
 
-      - *console_name* **➤** Display's the currently active `ConsoleClient`'s name (i.e. `"PlayStation 3"`)
-      - *network_name* **➤** Display's the in use online network's name determined by the `ConsoleClient`'s name (i.e. `"Playstation Network"`), Network Full Name is configured manualy as it can't be easely be polled from WebMAN
-      - *app_name* **➤** Display's the currently running app's name (i.e. `"XMB"`)
-      - *info_firmware* (***Default***) **➤** Display's the console's Firmware version (i.e. `"4.90 CEX"`)
-      - *info_network* **➤** Display's the user's online network ID (i.e. `"PSN : Benchatooo"`), Network Name and Network ID are configured manualy as they can't be easely be polled from WebMAN
-      - *info_hardware* **➤** Display's hardware information about the console (i.e. `"Cell: 65°C | RSX: 73°C"`)
-      - *{customstring}* **➤** In the case you don't input any of the above the value of the field will be displayed, empty means nothing to be displayed
+      - *console_name* **➤** Displays the currently active `ConsoleClient`'s name (i.e., `"PlayStation 3"`)
+      - *network_name* **➤** Displays the online network name in use, determined by the `ConsoleClient`'s name (i.e., `"PlayStation Network"`); Network Full Name is configured manually as it cannot easily be polled from WebMAN
+      - *app_name* **➤** Displays the currently running app's name (i.e., `"XMB"`)
+      - *info_firmware* (***Default***) **➤** Displays the console's firmware version (i.e., `"4.90 CEX"`)
+      - *info_network* **➤** Displays the user's online network ID (i.e., `"PSN : Benchatooo"`); Network Name and Network ID are configured manually as they cannot easily be polled from WebMAN
+      - *info_hardware* **➤** Displays hardware information about the console (i.e., `"Cell: 65°C | RSX: 73°C"`)
+      - *{customstring}* **➤** In case you don't input any of the above, the value of the field will be displayed; an empty value means nothing will be displayed
     
     </details>
 
@@ -214,8 +214,8 @@ The configuration for Presenced is represeted as a dictionary which allows it to
 
       - *image_app* **➤** Uses the running app's icon determined by the `ConsoleClient`
       - *image_console* (***Default***) **➤** Uses the console's logo determined by the currently displayed `ConsoleClient`
-      - *image_network* **➤** Uses the currently displayed `ConsoleClient` to display the appropriate Multiplayer Network icon (i.e. the PSN logo), Network icon has to be configured manualy as the in use multiplayer online network can't be easely be polled from WebMAN
-      - *{customurl}* **➤** In the case you don't input any of the above we'll try to use the string as an image url, if it's not one (i.e. empty string) then no image shall be displayed
+      - *image_network* **➤** Uses the currently displayed `ConsoleClient` to display the appropriate Multiplayer Network icon (i.e., the PSN logo); Network icon has to be configured manually as the multiplayer online network in use cannot easily be polled from WebMAN
+      - *{customurl}* **➤** In case you don't input any of the above, we'll try to use the string as an image URL; if it is not one (i.e., an empty string), then no image shall be displayed
     
     </details>
 
@@ -229,9 +229,9 @@ The configuration for Presenced is represeted as a dictionary which allows it to
     <details>
         <summary>Click to see field options</summary>
 
-      - *console_name* (***Default***) **➤** Display's the currently active `ConsoleClient`'s name (i.e. `"Wii U"`)
-      - *app_name* **➤** Display's the currently running app's name (i.e. `"Wii U Menu"`)
-      - *{customstring}* **➤** In the case you don't input any of the above the value of the field will be displayed, empty will fallback to the default value of *`console_name`*
+      - *console_name* (***Default***) **➤** Displays the currently active `ConsoleClient`'s name (i.e., `"Wii U"`)
+      - *app_name* **➤** Displays the currently running app's name (i.e., `"Wii U Menu"`)
+      - *{customstring}* **➤** In case you don't input any of the above, the value of the field will be displayed; an empty value will fall back to the default value
     
     </details>
 
@@ -240,13 +240,13 @@ The configuration for Presenced is represeted as a dictionary which allows it to
     <details>
         <summary>Click to see field options</summary>
 
-      - *console_name* **➤** Display's the currently active `ConsoleClient`'s name (i.e. `"Wii U"`)
-      - *network_name* **➤** Display's the in use online network's name determined by the `ConsoleClient`'s name (i.e. `"Pretendo Network"`)
-      - *app_name* (***Default***) **➤** Display's the currently running app's name (i.e. `"Wii U Menu"`)
-      - *info_firmware* **➤** Display's the console's Firmware version (i.e. `"5.5.5E"`), Firmware version can't be polled from the Discord RPC Aroma plugin meaning it's manually configured
-      - *info_network* **➤** Display's the user's online network ID (i.e. `"PNID : Benchatooo"`)
-      - *info_hardware* **➤** Display's hardware information about the console (i.e. `"IBM Espresso | AMD Latte"`), temperature data can't be polled from the Discord RPC Aroma plugin meaning it uses manually configured strings
-      - *{customstring}* **➤** In the case you don't input any of the above the value of the field will be displayed, empty means nothing to be displayed
+      - *console_name* **➤** Displays the currently active `ConsoleClient`'s name (i.e., `"Wii U"`)
+      - *network_name* **➤** Displays the online network name in use, determined by the `ConsoleClient`'s name (i.e., `"Pretendo Network"`)
+      - *app_name* (***Default***) **➤** Displays the currently running app's name (i.e., `"Wii U Menu"`)
+      - *info_firmware* **➤** Displays the console's firmware version (i.e., `"5.5.5E"`); firmware version cannot be polled from the Discord RPC Aroma plugin, meaning it is manually configured
+      - *info_network* **➤** Displays the user's online network ID (i.e., `"PNID : Benchatooo"`)
+      - *info_hardware* **➤** Displays hardware information about the console (i.e., `"IBM Espresso | AMD Latte"`); temperature data cannot be polled from the Discord RPC Aroma plugin, meaning it uses manually configured strings
+      - *{customstring}* **➤** In case you don't input any of the above, the value of the field will be displayed; an empty value means nothing will be displayed
     
     </details>
 
@@ -255,13 +255,13 @@ The configuration for Presenced is represeted as a dictionary which allows it to
     <details>
         <summary>Click to see field options</summary>
 
-      - *console_name* **➤** Display's the currently active `ConsoleClient`'s name (i.e. `"Wii U"`)
-      - *network_name* **➤** Display's the in use online network's name determined by the `ConsoleClient`'s name (i.e. `"Pretendo Network"`)
-      - *app_name* **➤** Display's the currently running app's name (i.e. `"Wii U Menu"`)
-      - *info_firmware* **➤** Display's the console's Firmware version (i.e. `"5.5.5E"`), Firmware version can't be polled from the Discord RPC Aroma plugin meaning it's manually configured
-      - *info_network* (***Default***) **➤** Display's the user's online network ID (i.e. `"PNID : Benchatooo"`)
-      - *info_hardware* **➤** Display's hardware information about the console (i.e. `"IBM Espresso | AMD Latte"`), temperature data can't be polled from the Discord RPC Aroma plugin meaning it uses manually configured strings
-      - *{customstring}* **➤** In the case you don't input any of the above the value of the field will be displayed, empty means nothing to be displayed
+      - *console_name* **➤** Displays the currently active `ConsoleClient`'s name (i.e., `"Wii U"`)
+      - *network_name* **➤** Displays the online network name in use, determined by the `ConsoleClient`'s name (i.e., `"Pretendo Network"`)
+      - *app_name* **➤** Displays the currently running app's name (i.e., `"Wii U Menu"`)
+      - *info_firmware* **➤** Displays the console's firmware version (i.e., `"5.5.5E"`); firmware version cannot be polled from the Discord RPC Aroma plugin, meaning it is manually configured
+      - *info_network* (***Default***) **➤** Displays the user's online network ID (i.e., `"PNID : Benchatooo"`)
+      - *info_hardware* **➤** Displays hardware information about the console (i.e., `"IBM Espresso | AMD Latte"`); temperature data cannot be polled from the Discord RPC Aroma plugin, meaning it uses manually configured strings
+      - *{customstring}* **➤** In case you don't input any of the above, the value of the field will be displayed; an empty value means nothing will be displayed
 
     </details>
 
@@ -270,13 +270,13 @@ The configuration for Presenced is represeted as a dictionary which allows it to
     <details>
         <summary>Click to see field options</summary>
 
-      - *console_name* **➤** Display's the currently active `ConsoleClient`'s name (i.e. `"Wii U"`)
-      - *network_name* **➤** Display's the in use online network's name determined by the `ConsoleClient`'s name (i.e. `"Pretendo Network"`)
-      - *app_name* (***Default***) **➤** Display's the currently running app's name (i.e. `"Wii U Menu"`)
-      - *info_firmware* **➤** Display's the console's Firmware version (i.e. `"5.5.5E"`), Firmware version can't be polled from the Discord RPC Aroma plugin meaning it's manually configured
-      - *info_network* **➤** Display's the user's online network ID (i.e. `"PNID : Benchatooo"`)
-      - *info_hardware* **➤** Display's hardware information about the console (i.e. `"IBM Espresso | AMD Latte"`), temperature data can't be polled from the Discord RPC Aroma plugin meaning it uses manually configured strings
-      - *{customstring}* **➤** In the case you don't input any of the above the value of the field will be displayed, empty means nothing to be displayed
+      - *console_name* **➤** Displays the currently active `ConsoleClient`'s name (i.e., `"Wii U"`)
+      - *network_name* **➤** Displays the online network name in use, determined by the `ConsoleClient`'s name (i.e., `"Pretendo Network"`)
+      - *app_name* (***Default***) **➤** Displays the currently running app's name (i.e., `"Wii U Menu"`)
+      - *info_firmware* **➤** Displays the console's firmware version (i.e., `"5.5.5E"`); firmware version cannot be polled from the Discord RPC Aroma plugin, meaning it is manually configured
+      - *info_network* **➤** Displays the user's online network ID (i.e., `"PNID : Benchatooo"`)
+      - *info_hardware* **➤** Displays hardware information about the console (i.e., `"IBM Espresso | AMD Latte"`); temperature data cannot be polled from the Discord RPC Aroma plugin, meaning it uses manually configured strings
+      - *{customstring}* **➤** In case you don't input any of the above, the value of the field will be displayed; an empty value means nothing will be displayed
     
     </details>
 
@@ -287,8 +287,8 @@ The configuration for Presenced is represeted as a dictionary which allows it to
 
       - *image_app* (***Default***) **➤** Uses the running app's icon determined by the `ConsoleClient`
       - *image_console* **➤** Uses the console's logo determined by the currently displayed `ConsoleClient`
-      - *image_network* **➤** Uses the currently displayed `ConsoleClient` to display the appropriate Multiplayer Network icon (i.e. Pretendo Network)
-      - *{customurl}* **➤** In the case you don't input any of the above we'll try to use the string as an image url, if it's not one (i.e. empty string) then no image shall be displayed
+      - *image_network* **➤** Uses the currently displayed `ConsoleClient` to display the appropriate Multiplayer Network icon (i.e., Pretendo Network)
+      - *{customurl}* **➤** In case you don't input any of the above, we'll try to use the string as an image URL; if it is not one (i.e., an empty string), then no image shall be displayed
     
     </details>
 
@@ -297,13 +297,13 @@ The configuration for Presenced is represeted as a dictionary which allows it to
     <details>
         <summary>Click to see field options</summary>
 
-      - *console_name* **➤** Display's the currently active `ConsoleClient`'s name (i.e. `"Wii U"`)
-      - *network_name* **➤** Display's the in use online network's name determined by the `ConsoleClient`'s name (i.e. `"Pretendo Network"`)
-      - *app_name* **➤** Display's the currently running app's name (i.e. `"Wii U Menu"`)
-      - *info_firmware* (***Default***) **➤** Display's the console's Firmware version (i.e. `"5.5.5E"`), Firmware version can't be polled from the Discord RPC Aroma plugin meaning it's manually configured
-      - *info_network* **➤** Display's the user's online network ID (i.e. `"PNID : Benchatooo"`)
-      - *info_hardware* **➤** Display's hardware information about the console (i.e. `"IBM Espresso | AMD Latte"`), temperature data can't be polled from the Discord RPC Aroma plugin meaning it uses manually configured strings
-      - *{customstring}* **➤** In the case you don't input any of the above the value of the field will be displayed, empty means nothing to be displayed
+      - *console_name* **➤** Displays the currently active `ConsoleClient`'s name (i.e., `"Wii U"`)
+      - *network_name* **➤** Displays the online network name in use, determined by the `ConsoleClient`'s name (i.e., `"Pretendo Network"`)
+      - *app_name* **➤** Displays the currently running app's name (i.e., `"Wii U Menu"`)
+      - *info_firmware* (***Default***) **➤** Displays the console's firmware version (i.e., `"5.5.5E"`); firmware version cannot be polled from the Discord RPC Aroma plugin, meaning it is manually configured
+      - *info_network* **➤** Displays the user's online network ID (i.e., `"PNID : Benchatooo"`)
+      - *info_hardware* **➤** Displays hardware information about the console (i.e., `"IBM Espresso | AMD Latte"`); temperature data cannot be polled from the Discord RPC Aroma plugin, meaning it uses manually configured strings
+      - *{customstring}* **➤** In case you don't input any of the above, the value of the field will be displayed; an empty value means nothing will be displayed
     
     </details>
 
@@ -314,8 +314,8 @@ The configuration for Presenced is represeted as a dictionary which allows it to
 
       - *image_app* **➤** Uses the running app's icon determined by the `ConsoleClient`
       - *image_console* (***Default***) **➤** Uses the console's logo determined by the currently displayed `ConsoleClient`
-      - *image_network* **➤** Uses the currently displayed `ConsoleClient` to display the appropriate Multiplayer Network icon (i.e. Pretendo Network)
-      - *{customurl}* **➤** In the case you don't input any of the above we'll try to use the string as an image url, if it's not one (i.e. empty string) then no image shall be displayed
+      - *image_network* **➤** Uses the currently displayed `ConsoleClient` to display the appropriate Multiplayer Network icon (i.e., Pretendo Network)
+      - *{customurl}* **➤** In case you don't input any of the above, we'll try to use the string as an image URL; if it is not one (i.e., an empty string), then no image shall be displayed
     
     </details>
 
@@ -323,12 +323,12 @@ The configuration for Presenced is represeted as a dictionary which allows it to
 
 ## PS3
 
-- **NetworkName** *[STR]* : Acronym of the in use Multiplayer Network for the *`info_network`* preset (i.e. `"PSN"`), if not set will default to `"PSN"`
-- **NetworkNameFull** *[STR]* : Full name of the in use Multiplayer Network for the *`network_name`* preset (i.e. `"PlayStation Network"`), if not set will default to `"PlayStation Network"`
-- **NetworkID** *[STR]* : Your Multiplayer Network username for the *`info_network`* preset (i.e. `"Benchatooo"`), if not set will default to `"{anon-user}"`
-- **UseCelsius** *[BOOL]* : Wether to use Celsius or Fahrenheits in the *`info_hardware`* preset, if not set will default to `True`
+- **NetworkName** *[STR]* : Acronym of the in-use Multiplayer Network for the *`info_network`* preset (i.e., `"PSN"`); if not set, will default to `"PSN"`
+- **NetworkNameFull** *[STR]* : Full name of the in-use Multiplayer Network for the *`network_name`* preset (i.e., `"PlayStation Network"`); if not set, will default to `"PlayStation Network"`
+- **NetworkID** *[STR]* : Your Multiplayer Network username for the *`info_network`* preset (i.e., `"Benchatooo"`); if not set, will default to `"{anon-user}"`
+- **UseCelsius** *[BOOL]* : Whether to use Celsius or Fahrenheit in the *`info_hardware`* preset; if not set, will default to `True`
 
 ## Wii U
 
-- **FirmwareVer** *[STR]* : CafeOS version number for the *`info_firmware`* preset, can be found by going into the settings (i.e. `"5.5.5E"`), if not set will default to `"{unkown-ver}"`
-- **HWInfoText** *[STR]* : Information you're Wii U for the *`info_hardware`* preset (i.e. CPU/GPU name ➤ `"IBM Espresso | AMD Latte"`, or board revision ➤ `"WUP-50"`, modchip if you want `"de_fuse"`, anything hardware related you can come up with), if not set will default to `"IBM Espresso | AMD Latte"` for consistence with the PS3's `"Cell: {temp}°{C/F} | RSX: {temp}°{C/F}"`
+- **FirmwareVer** *[STR]* : CafeOS version number for the *`info_firmware`* preset; can be found by going into settings (i.e., `"5.5.5E"`). If not set, will default to `"{unknown-ver}"`
+- **HWInfoText** *[STR]* : Information about your Wii U for the *`info_hardware`* preset (i.e., CPU/GPU name ➤ `"IBM Espresso | AMD Latte"`, board revision ➤ `"WUP-50"`, modchip if you want ➤ `"de_fuse"`, or anything hardware-related you can come up with); if not set, will default to `"IBM Espresso | AMD Latte"` for consistency with the PS3's `"Cell: {temp}°{C/F} | RSX: {temp}°{C/F}"`
