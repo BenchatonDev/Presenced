@@ -1,5 +1,4 @@
-from time import sleep
-from SmanParser import SmanHTMLParser
+from .SmanParser import SmanHTMLParser
 from ConsoleClient import * 
 from icmplib import ping
 import requests
