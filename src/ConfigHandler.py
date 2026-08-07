@@ -102,6 +102,7 @@ def SanitizerTM(Config: dict):
         DefaultInated = {}
         ChangedKeys = []
 
+        # DEFAULTINATE !!!
         for Key, GlobalDefault in GlobalDefaultSegment.items():
             InatorDefault = InatorDefaultSegment.get(Key)
             
@@ -119,17 +120,15 @@ def SanitizerTM(Config: dict):
             if isinstance(Value, dict) and isinstance(InatorDefault, dict) and isinstance(GlobalDefault, dict):
                 SubDefaultInated, SubChangedKeys = DefaultInator(Value, InatorDefault, GlobalDefault)
                 DefaultInated[Key] = SubDefaultInated
-                ChangedKeys.extend(SubChangedKeys)
+                ChangedKeys += SubChangedKeys
 
             else:
                 DefaultInated[Key] = Value
 
         return DefaultInated, ChangedKeys
 
-    def TelePrompter():
-        return
+    def TelePrompter(ChangedVars: list):
 
-    def FormatSanitizerTM():
         return
 
     # Bootstraping the DEFAULTINATOR !
@@ -144,6 +143,7 @@ def SanitizerTM(Config: dict):
         CareOnlyCommonFormat = Config["Presence"].get("UseCommonFormat")
 
     DefaultInatorDefaults = copy.deepcopy(DEFAULT_CONFIG)
+
     # Only DefaultInate Clients that will be used
     for Client in VALID_CLIENTS: 
         if Client not in ConfiguredClients: DefaultInatorDefaults["ClientConfig"].pop(Client)
@@ -153,9 +153,7 @@ def SanitizerTM(Config: dict):
     + [f"{FMT}Format" for FMT in VALID_CLIENTS if FMT not in ConfiguredClients]: # Fancy expression I know :)
         DefaultInatorDefaults["Presence"].pop(Format)
 
-    print(DefaultInator(Config, DefaultInatorDefaults, DEFAULT_CONFIG))
-
-    SanitizedConf = Config
+    SanitizedConf, ChangedVars = DefaultInator(Config, DefaultInatorDefaults, DEFAULT_CONFIG)
 
     return SanitizedConf
 
@@ -182,4 +180,4 @@ def ConfigLoader():
 
 Config = ConfigLoader()
 
-#print(Config)
+print(Config)
