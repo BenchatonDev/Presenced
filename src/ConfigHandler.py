@@ -135,6 +135,53 @@ def SanitizerTM(Config: dict):
         return ValidToken
 
     def TelePrompter(ChangedVars: list, Config: dict):
+        # While pretty flexible TelePrompter is onl meant to handle single values, to support anything other than Bool, Int, and Str
+        # You'll need to update the Recursive Prompt function, happy coding to you I guess, unless you're me then fuck you future me
+
+        # I'm trying to be tree like with tuples, so the first item is the parent and the second item is a child list, because we love
+        # Maintainable code and because I'd like you to add more Clients if you are so inclined the child list is automaticly generated
+        # Thanks to python's list "Inline" for loops or whatever they're called, still some manual labour required which is bad but I
+        # Can't think of anything better right now + it should be simple to implement and much better than my switch statement spam :)
+        AttentionSeekingVars = {"ClientConfig": (None, [Child for Child in DEFAULT_CONFIG["ClientConfig"].keys()]),
+                                "PS3": ("ClientConfig", [Child for Child in DEFAULT_CONFIG["ClientConfig"]["PS3"].keys()]),
+                                "PS3Address": ("PS3", None), "NetworkName": ("PS3", None), "NetworkNameFull": ("PS3", None),
+                                "NetworkID": ("PS3", None), "UseCelsius": ("PS3", None), # This is filler text so no gap here
+                                "WiiU": ("ClientConfig", [Child for Child in DEFAULT_CONFIG["ClientConfig"]["WiiU"].keys()]),
+                                "WiiUAddress": ("WiiU", None), "FirmwareVer": ("WiiU", None), "HWInfoText": ("WiiU", None)}
+
+        def TreeClimber(Branch: str, Tree: dict[str, tuple], _Propagator: tuple[bool, list, dict, dict] | None = None):
+            ShouldPropagate, GenealogicalTree, ConfigFold, DefaultConfigFold = _Propagator if _Propagator else (False, [], {}, {})
+
+            if not ShouldPropagate:
+                GenealogicalTree.append(Branch)
+
+                if Tree[Branch][0]:
+                    TreeClimber(Tree[Branch][0], Tree, (False, GenealogicalTree, {}, {}))                    
+
+                # Edge case where the targeted key has the root for parent and no kids (sad ik), unlikely because of how
+                # I decided to structure the config file but who knows, "flexible" code is better code I guess, maybe ??
+                elif len(GenealogicalTree) == 1 and type(DEFAULT_CONFIG[Branch]) != dict:
+                    Config[Branch] = RecursivePrompt(Branch, type(DEFAULT_CONFIG[Branch]), DEFAULT_CONFIG[Branch])
+
+                else:
+                    TreeClimber(Branch, Tree, (True, GenealogicalTree, Config[Branch], DEFAULT_CONFIG[Branch]))
+
+            else:
+                GenealogicalTree.pop(-1)
+                if GenealogicalTree:
+                    TreeClimber(GenealogicalTree[-1], Tree, \
+                                (True, GenealogicalTree, ConfigFold[GenealogicalTree[-1]], DefaultConfigFold[GenealogicalTree[-1]]))
+                    
+                else:
+                    if Tree[Branch][1]:
+                        for Child in Tree[Branch][1]:
+                            TreeClimber(Child, Tree)
+
+                    else:
+                        ConfigFold = RecursivePrompt(Branch, type(DefaultConfigFold), DefaultConfigFold)
+
+            return
+
         def RecursivePrompt(VariableName: str, VariableType: type, VariableDefault: object):
             HasDefault = ": " if not VariableDefault else f"(ENTER to use default of \"{VariableDefault}\"): " 
             VariableValue = None
@@ -147,6 +194,7 @@ def SanitizerTM(Config: dict):
                     # Bools may be tricky for non devs since anything other than "" counts as true, we hate if
                     # Satements but useability requires it, just don't look at the switch statement bomb below
                     # I pinky promise I'll maybe make something actually maintainable (Don't take my word)
+                    # While not perfect I held my promise ! And just one commit later, like it's never been an issue
                     if VariableType == bool:
                         if UserInput.lower() in ["true", "t", "1", "y"]:
                             VariableValue = True
@@ -168,73 +216,10 @@ def SanitizerTM(Config: dict):
             print(TelePrompterMsg)
 
             for Var in ChangedVars:
-                match Var:
-                    case "ClientConfig":
-                        for Client in ConfiguredClients:
-                            match Client:
-                                case "PS3":
-                                    Config["ClientConfig"]["PS3"]["PS3Address"] = \
-                                        RecursivePrompt("PS3Address", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["PS3Address"])
-                                    Config["ClientConfig"]["PS3"]["NetworkName"] = \
-                                        RecursivePrompt("NetworkName", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkName"])
-                                    Config["ClientConfig"]["PS3"]["NetworkNameFull"] = \
-                                        RecursivePrompt("NetworkNameFull", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkNameFull"])
-                                    Config["ClientConfig"]["PS3"]["NetworkID"] = \
-                                        RecursivePrompt("NetworkID", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkID"])
-                                    Config["ClientConfig"]["PS3"]["UseCelsius"] = \
-                                        RecursivePrompt("UseCelsius", bool, DEFAULT_CONFIG["ClientConfig"]["PS3"]["UseCelsius"])
-                                
-                                case "WiiU":
-                                    Config["ClientConfig"]["WiiU"]["WiiUAddress"] = \
-                                        RecursivePrompt("WiiUAddress", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["WiiUAddress"])
-                                    Config["ClientConfig"]["WiiU"]["FirmwareVer"] = \
-                                        RecursivePrompt("FirmwareVer", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["FirmwareVer"])
-                                    Config["ClientConfig"]["WiiU"]["HWInfoText"] = \
-                                        RecursivePrompt("HWInfoText", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["HWInfoText"])
-                    case "PS3":
-                        Config["ClientConfig"]["PS3"]["PS3Address"] = \
-                            RecursivePrompt("PS3Address", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["PS3Address"])
-                        Config["ClientConfig"]["PS3"]["NetworkName"] = \
-                            RecursivePrompt("NetworkName", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkName"])
-                        Config["ClientConfig"]["PS3"]["NetworkNameFull"] = \
-                            RecursivePrompt("NetworkNameFull", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkNameFull"])
-                        Config["ClientConfig"]["PS3"]["NetworkID"] = \
-                            RecursivePrompt("NetworkID", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkID"])
-                        Config["ClientConfig"]["PS3"]["UseCelsius"] = \
-                            RecursivePrompt("UseCelsius", bool, DEFAULT_CONFIG["ClientConfig"]["PS3"]["UseCelsius"])
-                    case "PS3Address":
-                        Config["ClientConfig"]["PS3"]["PS3Address"] = \
-                            RecursivePrompt("PS3Address", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["PS3Address"])
-                    case "NetworkName":
-                        Config["ClientConfig"]["PS3"]["NetworkName"] = \
-                            RecursivePrompt("NetworkName", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkName"])
-                    case "NetworkNameFull":
-                        Config["ClientConfig"]["PS3"]["NetworkNameFull"] = \
-                            RecursivePrompt("NetworkNameFull", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkNameFull"])
-                    case "NetworkID":
-                        Config["ClientConfig"]["PS3"]["NetworkID"] = \
-                            RecursivePrompt("NetworkID", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkID"])
-                    case "UseCelsius":
-                        Config["ClientConfig"]["PS3"]["UseCelsius"] = \
-                            RecursivePrompt("UseCelsius", bool, DEFAULT_CONFIG["ClientConfig"]["PS3"]["UseCelsius"])
+                if Var in AttentionSeekingVars:
+                    TreeClimber(Var, AttentionSeekingVars)
 
-                    case "WiiU":
-                        Config["ClientConfig"]["WiiU"]["WiiUAddress"] = \
-                            RecursivePrompt("WiiUAddress", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["WiiUAddress"])
-                        Config["ClientConfig"]["WiiU"]["FirmwareVer"] = \
-                            RecursivePrompt("FirmwareVer", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["FirmwareVer"])
-                        Config["ClientConfig"]["WiiU"]["HWInfoText"] = \
-                            RecursivePrompt("HWInfoText", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["HWInfoText"])
-                    case "WiiUAddress":
-                        Config["ClientConfig"]["WiiU"]["WiiUAddress"] = \
-                            RecursivePrompt("WiiUAddress", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["WiiUAddress"])
-                    case "FirmwareVer":
-                        Config["ClientConfig"]["WiiU"]["FirmwareVer"] = \
-                            RecursivePrompt("FirmwareVer", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["FirmwareVer"])
-                    case "HWInfoText":
-                        Config["ClientConfig"]["WiiU"]["HWInfoText"] = \
-                            RecursivePrompt("HWInfoText", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["HWInfoText"])
-        return
+        return Config
 
     # Bootstraping the DEFAULTINATOR !
     if isinstance(Config.get("General"), dict) and isinstance(Config["General"].get("ConsoleClients"), list):
@@ -260,7 +245,6 @@ def SanitizerTM(Config: dict):
 
     SanitizedConf, ChangedVars = DefaultInator(Config, DefaultInatorDefaults, DEFAULT_CONFIG)
 
-    print(ChangedVars)
     TelePrompter(ChangedVars, SanitizedConf)
 
     return SanitizedConf
@@ -288,4 +272,4 @@ def ConfigLoader():
 
 Config = ConfigLoader()
 
-print(Config)
+#print(Config)
