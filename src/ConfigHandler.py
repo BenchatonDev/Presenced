@@ -1,5 +1,5 @@
 from PS3.PS3Client import PS3Client
-import json
+import json; import copy
 
 # Look a constant, in this economy ???
 DEFAULT_CONFIG = {
@@ -41,22 +41,30 @@ DEFAULT_CONFIG = {
             "ImageSmallType": "image_console"
         }
     },
-    "PS3": {
-        "NetworkName": "PSN",
-        "NetworkNameFull": "PlayStation Network",
-        "NetworkID": "{anon-user}",
-        "UseCelsius": True
-    },
-    "WiiU": {
-        "FirmwareVer": "{unknown-ver}",
-        "HWInfoText": "IBM Espresso | AMD Latte"
+    "ClientConfig": {
+        "PS3": {
+            "NetworkName": "PSN",
+            "NetworkNameFull": "PlayStation Network",
+            "NetworkID": "{anon-user}",
+            "UseCelsius": True
+        },
+        "WiiU": {
+            "FirmwareVer": "{unknown-ver}",
+            "HWInfoText": "IBM Espresso | AMD Latte"
+        }
     }
 }
 
+# More Constants ??? Oh my, Oh my !
+VALID_CLIENTS = ["PS3", "WiiU"]
+
 Config = {}
+
 # TM for TradeMark, Have fun naming your most private of functions with silly names too~
-def SanitizerTM(config: dict):
+def SanitizerTM(Config: dict):
     SanitizedConf = {}
+    ConfiguredClients = []
+    CareOnlyCommonFormat = True
 
     def AppIDChecker(AppID: str):
         AppID = "NotAnID" if AppID.strip() == "" else AppID
@@ -90,14 +98,71 @@ def SanitizerTM(config: dict):
 
         return ValidToken
 
+    def DefaultInator(DirtySegment: dict, DefaultSegment: dict):
+        DefaultInated = {}
+        ChangedKeys = []
+
+        for key in DirtySegment.keys():
+            if key in DefaultSegment:
+                print()
+
+        return DefaultInated
+
     def TelePrompter():
         return
 
     def FormatSanitizerTM():
         return
 
+    # Bootstraping the DEFAULTINATOR !
+    if isinstance(Config.get("General"), dict) and isinstance(Config["General"].get("ConsoleClients"), list):
+        ConfiguredClients = [Client for Client in Config["General"].get("ConsoleClients") if Client in VALID_CLIENTS] \
+                            if Config["General"].get("ConsoleClients") else VALID_CLIENTS
+
+    else:
+        ConfiguredClients = VALID_CLIENTS
+
+    if isinstance(Config.get("Presence"), dict) and isinstance(Config["Presence"].get("UseCommonFormat"), bool):
+        CareOnlyCommonFormat = Config["Presence"].get("UseCommonFormat")
+
+    DefaultInatorDefaults = copy.deepcopy(DEFAULT_CONFIG)
+    # Only DefaultInate Clients that will be used
+    for Client in VALID_CLIENTS: 
+        if Client not in ConfiguredClients: DefaultInatorDefaults["ClientConfig"].pop(Client)
+
+    # Only Defaultinate Presence Format's that will be used
+    for Format in [f"{FMT}Format" for FMT in VALID_CLIENTS] if CareOnlyCommonFormat else ["CommonFormat"] \
+    + [f"{FMT}Format" for FMT in VALID_CLIENTS if FMT not in ConfiguredClients]: # Fancy expression I know :)
+        DefaultInatorDefaults["Presence"].pop(Format)
+
+    print(DefaultInatorDefaults)
+    #DefaultInator(Config)
+
+    SanitizedConf = Config
+
     return SanitizedConf
 
 def ConfigLoader():
+    ConfigFile = None
+    DirtyConfig = {}
+    
+    try:
+        ConfigFile = open("config.json", "r")
+    except FileNotFoundError:
+        print("Config File not found, File will be created")
 
-    return
+    if ConfigFile:
+        try:
+            DirtyConfig = json.load(ConfigFile)
+            ConfigFile.close()
+        except json.JSONDecodeError:
+            ConfigFile.close()
+            print("Invalid Config File, failed to parse json, new File will be created")
+    else:
+        DirtyConfig = {}
+
+    return SanitizerTM(DirtyConfig)
+
+Config = ConfigLoader()
+
+#print(Config)
