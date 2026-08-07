@@ -64,7 +64,7 @@ Config = {}
 def SanitizerTM(Config: dict):
     SanitizedConf = {}
     ConfiguredClients = []
-    CareOnlyCommonFormat = True
+    CareOnlyCommonFormat = DEFAULT_CONFIG["Presence"].get("UseCommonFormat")
 
     def AppIDChecker(AppID: str):
         AppID = "NotAnID" if AppID.strip() == "" else AppID
@@ -98,15 +98,33 @@ def SanitizerTM(Config: dict):
 
         return ValidToken
 
-    def DefaultInator(DirtySegment: dict, DefaultSegment: dict):
+    def DefaultInator(DirtySegment: dict, InatorDefaultSegment: dict, GlobalDefaultSegment: dict):
         DefaultInated = {}
         ChangedKeys = []
 
-        for key in DirtySegment.keys():
-            if key in DefaultSegment:
-                print()
+        for Key, GlobalDefault in GlobalDefaultSegment.items():
+            InatorDefault = InatorDefaultSegment.get(Key)
+            
+            if Key in DirtySegment:
+                Value = DirtySegment[Key]
+                
+                if InatorDefault is not None and type(Value) is not type(InatorDefault):
+                    Value = InatorDefault
+                    ChangedKeys.append(Key)
 
-        return DefaultInated
+            else:
+                Value = InatorDefault
+                ChangedKeys.append(Key)
+
+            if isinstance(Value, dict) and isinstance(InatorDefault, dict) and isinstance(GlobalDefault, dict):
+                SubDefaultInated, SubChangedKeys = DefaultInator(Value, InatorDefault, GlobalDefault)
+                DefaultInated[Key] = SubDefaultInated
+                ChangedKeys.extend(SubChangedKeys)
+
+            else:
+                DefaultInated[Key] = Value
+
+        return DefaultInated, ChangedKeys
 
     def TelePrompter():
         return
@@ -130,13 +148,12 @@ def SanitizerTM(Config: dict):
     for Client in VALID_CLIENTS: 
         if Client not in ConfiguredClients: DefaultInatorDefaults["ClientConfig"].pop(Client)
 
-    # Only Defaultinate Presence Format's that will be used
+    # Only Defaultinate Presence Formats that will be used
     for Format in [f"{FMT}Format" for FMT in VALID_CLIENTS] if CareOnlyCommonFormat else ["CommonFormat"] \
     + [f"{FMT}Format" for FMT in VALID_CLIENTS if FMT not in ConfiguredClients]: # Fancy expression I know :)
         DefaultInatorDefaults["Presence"].pop(Format)
 
-    print(DefaultInatorDefaults)
-    #DefaultInator(Config)
+    print(DefaultInator(Config, DefaultInatorDefaults, DEFAULT_CONFIG))
 
     SanitizedConf = Config
 
