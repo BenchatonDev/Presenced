@@ -131,15 +131,28 @@ def SanitizerTM(Config: dict):
         return ValidToken
 
     def TelePrompter(ChangedVars: list, Config: dict):
-        def RecursivePrompt(VariableName: str, VariableType: type):
+        def RecursivePrompt(VariableName: str, VariableType: type, VariableDefault: object):
+            HasDefault = ": " if not VariableDefault else f"(ENTER to use default of \"{VariableDefault}\"): " 
             VariableValue = None
 
+            UserInput = input(f"Configuration for variable \"{VariableName}\" of type \"{VariableType}\" needs to be set " + HasDefault).strip()
+            if not UserInput and HasDefault != ": ":
+                VariableValue = VariableDefault
+            else:
+                try:
+                    VariableValue = VariableType(UserInput)
+                except:
+                    print(f"Couldn't convert input for \"{VariableName}\" to \"{VariableType}\", please try again with another value")
+                    VariableValue = RecursivePrompt(VariableName, VariableType, VariableDefault)
+            
             return VariableValue
 
         if ChangedVars:
             TelePrompterMsg = "Configuration Variables were added / or changed because they were either missing or wrong in the config file,"
             TelePrompterMsg += "\nif any should be set by you, we'll make sure to ask for a value, in any other case the process is automatic"
             print(TelePrompterMsg)
+
+            print(RecursivePrompt("Test INT", int, 5))
 
             for Var in ChangedVars:
 
@@ -174,7 +187,7 @@ def SanitizerTM(Config: dict):
 
     SanitizedConf, ChangedVars = DefaultInator(Config, DefaultInatorDefaults, DEFAULT_CONFIG)
 
-    SanitizedConf = TelePrompter(ChangedVars, SanitizedConf)
+    TelePrompter(ChangedVars, SanitizedConf)
 
     return SanitizedConf
 
