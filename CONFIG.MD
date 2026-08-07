@@ -1,6 +1,6 @@
 # Config File Documentation
 
-The configuration for Presenced is represented as a dictionary which allows it to easily be read or saved to a JSON file. The configuration has two main parts: the "General" part, which stores settings that affect the whole program, and the "Presence" part, which stores settings in relation to how the Rich Presence will look on your Discord profile. Additionally, if a field present in `{Presence}Format` cannot poll its data from the `ConsoleClient`, it will use strings set in a dictionary under the corresponding `ConsoleClient`'s name.
+The configuration for Presenced is represented as a dictionary which allows it to easily be read or saved to a JSON file. The configuration has two main parts: the "General" part, which stores settings that affect the whole program, and the "Presence" part, which stores settings in relation to how the Rich Presence will look on your Discord profile. Additionally, if a field present in `{Presence}Format` cannot poll its data from the `ConsoleClient`, it will use strings set in a dictionary inside `ClientConfig` under the corresponding `ConsoleClient`'s name.
 
 ## General
 
@@ -321,14 +321,22 @@ The configuration for Presenced is represented as a dictionary which allows it t
 
   </details>
 
-## PS3
+## ClientConfig
 
-- **NetworkName** *[STR]* : Acronym of the in-use Multiplayer Network for the *`info_network`* preset (i.e., `"PSN"`); if not set, will default to `"PSN"`
-- **NetworkNameFull** *[STR]* : Full name of the in-use Multiplayer Network for the *`network_name`* preset (i.e., `"PlayStation Network"`); if not set, will default to `"PlayStation Network"`
-- **NetworkID** *[STR]* : Your Multiplayer Network username for the *`info_network`* preset (i.e., `"Benchatooo"`); if not set, will default to `"{anon-user}"`
-- **UseCelsius** *[BOOL]* : Whether to use Celsius or Fahrenheit in the *`info_hardware`* preset; if not set, will default to `True`
+- **PS3** *[DICT]* : Special configuration for the *`PS3`* `ConsoleClient`
+  <details open>
+    <summary>Click to see client configuration options</summary>
 
-## Wii U
+  - **NetworkName** *[STR]* : Acronym of the in-use Multiplayer Network for the *`info_network`* preset (i.e., `"PSN"`); if not set, will default to `"PSN"`
+  - **NetworkNameFull** *[STR]* : Full name of the in-use Multiplayer Network for the *`network_name`* preset (i.e., `"PlayStation Network"`); if not set, will default to `"PlayStation Network"`
+  - **NetworkID** *[STR]* : Your Multiplayer Network username for the *`info_network`* preset (i.e., `"Benchatooo"`); if not set, will default to `"{anon-user}"`
+  - **UseCelsius** *[BOOL]* : Whether to use Celsius or Fahrenheit in the *`info_hardware`* preset; if not set, will default to `True`
+  </details>
 
-- **FirmwareVer** *[STR]* : CafeOS version number for the *`info_firmware`* preset; can be found by going into settings (i.e., `"5.5.5E"`). If not set, will default to `"{unknown-ver}"`
-- **HWInfoText** *[STR]* : Information about your Wii U for the *`info_hardware`* preset (i.e., CPU/GPU name ➤ `"IBM Espresso | AMD Latte"`, board revision ➤ `"WUP-50"`, modchip if you want ➤ `"de_fuse"`, or anything hardware-related you can come up with); if not set, will default to `"IBM Espresso | AMD Latte"` for consistency with the PS3's `"Cell: {temp}°{C/F} | RSX: {temp}°{C/F}"`
+- **Wii U** *[DICT]* : Special configuration for the *`WiiU`* `ConsoleClient`
+  <details open>
+    <summary>Click to see client configuration options</summary>
+
+  - **FirmwareVer** *[STR]* : CafeOS version number for the *`info_firmware`* preset; can be found by going into settings (i.e., `"5.5.5E"`). If not set, will default to `"{unknown-ver}"`
+  - **HWInfoText** *[STR]* : Information about your Wii U for the *`info_hardware`* preset (i.e., CPU/GPU name ➤ `"IBM Espresso | AMD Latte"`, board revision ➤ `"WUP-50"`, modchip if you want ➤ `"de_fuse"`, or anything hardware-related you can come up with); if not set, will default to `"IBM Espresso | AMD Latte"` for consistency with the PS3's `"Cell: {temp}°{C/F} | RSX: {temp}°{C/F}"`
+  </details>
