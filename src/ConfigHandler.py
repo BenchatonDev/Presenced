@@ -43,12 +43,14 @@ DEFAULT_CONFIG = {
     },
     "ClientConfig": {
         "PS3": {
+            "IpAddress": "",
             "NetworkName": "PSN",
             "NetworkNameFull": "PlayStation Network",
             "NetworkID": "{anon-user}",
             "UseCelsius": True
         },
         "WiiU": {
+            "IpAddress": "",
             "FirmwareVer": "{unknown-ver}",
             "HWInfoText": "IBM Espresso | AMD Latte"
         }
@@ -142,7 +144,8 @@ def SanitizerTM(Config: dict):
             for Var in ChangedVars:
 
                 match Var:
-
+                    # If the whole general tag got changed, I safely assume
+                    # Your using the default general config, very very safely lmao
                     case "General":
                         print("shit")
         return
