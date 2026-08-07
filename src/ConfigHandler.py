@@ -64,7 +64,37 @@ Config = {}
 def SanitizerTM(Config: dict):
     SanitizedConf = {}
     ConfiguredClients = []
+    DefaultInatorDefaults = {}
     CareOnlyCommonFormat = DEFAULT_CONFIG["Presence"].get("UseCommonFormat")
+
+    def DefaultInator(DirtySegment: dict, InatorDefaultSegment: dict, GlobalDefaultSegment: dict):
+        DefaultInated = {}
+        ChangedKeys = []
+
+        # DEFAULTINATE !!!
+        for Key, GlobalDefault in GlobalDefaultSegment.items():
+            InatorDefault = InatorDefaultSegment.get(Key)
+            
+            if Key in DirtySegment:
+                Value = DirtySegment[Key]
+                
+                if InatorDefault is not None and type(Value) is not type(InatorDefault):
+                    Value = InatorDefault
+                    ChangedKeys.append(Key)
+
+            else:
+                Value = InatorDefault
+                ChangedKeys.append(Key)
+
+            if isinstance(Value, dict) and isinstance(InatorDefault, dict) and isinstance(GlobalDefault, dict):
+                SubDefaultInated, SubChangedKeys = DefaultInator(Value, InatorDefault, GlobalDefault)
+                DefaultInated[Key] = SubDefaultInated
+                ChangedKeys += SubChangedKeys
+
+            else:
+                DefaultInated[Key] = Value
+
+        return DefaultInated, ChangedKeys
 
     def AppIDChecker(AppID: str):
         AppID = "NotAnID" if AppID.strip() == "" else AppID
@@ -98,37 +128,23 @@ def SanitizerTM(Config: dict):
 
         return ValidToken
 
-    def DefaultInator(DirtySegment: dict, InatorDefaultSegment: dict, GlobalDefaultSegment: dict):
-        DefaultInated = {}
-        ChangedKeys = []
+    def TelePrompter(ChangedVars: list, Config: dict):
+        def RecursivePrompt(VariableName: str, VariableType: type):
+            VariableValue = None
 
-        # DEFAULTINATE !!!
-        for Key, GlobalDefault in GlobalDefaultSegment.items():
-            InatorDefault = InatorDefaultSegment.get(Key)
-            
-            if Key in DirtySegment:
-                Value = DirtySegment[Key]
-                
-                if InatorDefault is not None and type(Value) is not type(InatorDefault):
-                    Value = InatorDefault
-                    ChangedKeys.append(Key)
+            return VariableValue
 
-            else:
-                Value = InatorDefault
-                ChangedKeys.append(Key)
+        if ChangedVars:
+            TelePrompterMsg = "Configuration Variables were added / or changed because they were either missing or wrong in the config file,"
+            TelePrompterMsg += "\nif any should be set by you, we'll make sure to ask for a value, in any other case the process is automatic"
+            print(TelePrompterMsg)
 
-            if isinstance(Value, dict) and isinstance(InatorDefault, dict) and isinstance(GlobalDefault, dict):
-                SubDefaultInated, SubChangedKeys = DefaultInator(Value, InatorDefault, GlobalDefault)
-                DefaultInated[Key] = SubDefaultInated
-                ChangedKeys += SubChangedKeys
+            for Var in ChangedVars:
 
-            else:
-                DefaultInated[Key] = Value
+                match Var:
 
-        return DefaultInated, ChangedKeys
-
-    def TelePrompter(ChangedVars: list):
-
+                    case "General":
+                        print("shit")
         return
 
     # Bootstraping the DEFAULTINATOR !
@@ -154,6 +170,8 @@ def SanitizerTM(Config: dict):
         DefaultInatorDefaults["Presence"].pop(Format)
 
     SanitizedConf, ChangedVars = DefaultInator(Config, DefaultInatorDefaults, DEFAULT_CONFIG)
+
+    SanitizedConf = TelePrompter(ChangedVars, SanitizedConf)
 
     return SanitizedConf
 
