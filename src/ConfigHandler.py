@@ -75,24 +75,28 @@ def SanitizerTM(Config: dict):
 
         # DEFAULTINATE !!!
         for Key, GlobalDefault in GlobalDefaultSegment.items():
+            InInatorDefaultToo = Key in InatorDefaultSegment
             InatorDefault = InatorDefaultSegment.get(Key)
             
             if Key in DirtySegment:
                 Value = DirtySegment[Key]
                 
-                if InatorDefault is not None and type(Value) is not type(InatorDefault):
+                if InInatorDefaultToo and InatorDefault is not None and type(Value) is not type(InatorDefault):
                     Value = InatorDefault
                     ChangedKeys.append(Key)
 
             else:
-                Value = InatorDefault
-                ChangedKeys.append(Key)
+                if InInatorDefaultToo:
+                    Value = InatorDefault
+                    ChangedKeys.append(Key)
+                else:
+                    continue
 
-            if isinstance(Value, dict) and isinstance(InatorDefault, dict) and isinstance(GlobalDefault, dict):
-                SubDefaultInated, SubChangedKeys = DefaultInator(Value, InatorDefault, GlobalDefault)
+            if isinstance(Value, dict) and isinstance(GlobalDefault, dict):
+                NextInator = InatorDefault if isinstance(InatorDefault, dict) else {}
+                SubDefaultInated, SubChangedKeys = DefaultInator(Value, NextInator, GlobalDefault)
                 DefaultInated[Key] = SubDefaultInated
                 ChangedKeys += SubChangedKeys
-
             else:
                 DefaultInated[Key] = Value
 
@@ -140,8 +144,19 @@ def SanitizerTM(Config: dict):
                 VariableValue = VariableDefault
             else:
                 try:
-                    VariableValue = VariableType(UserInput)
-                except:
+                    # Bools may be tricky for non devs since anything other than "" counts as true, we hate if
+                    # Satements but useability requires it, just don't look at the switch statement bomb below
+                    # I pinky promise I'll maybe make something actually maintainable (Don't take my word)
+                    if VariableType == bool:
+                        if UserInput.lower() in ["true", "t", "1", "y"]:
+                            VariableValue = True
+                        elif UserInput.lower() in ["false", "f", "0", "n", ""]:
+                            VariableValue = False
+                        else:
+                            int("This guy is trying to cause a type error or smt")
+                    else:
+                        VariableValue = VariableType(UserInput)
+                except (TypeError, ValueError):
                     print(f"Couldn't convert input for \"{VariableName}\" to \"{VariableType}\", please try again with another value")
                     VariableValue = RecursivePrompt(VariableName, VariableType, VariableDefault)
             
@@ -152,15 +167,73 @@ def SanitizerTM(Config: dict):
             TelePrompterMsg += "\nif any should be set by you, we'll make sure to ask for a value, in any other case the process is automatic"
             print(TelePrompterMsg)
 
-            print(RecursivePrompt("Test INT", int, 5))
-
             for Var in ChangedVars:
-
                 match Var:
-                    # If the whole general tag got changed, I safely assume
-                    # Your using the default general config, very very safely lmao
-                    case "General":
-                        print("shit")
+                    case "ClientConfig":
+                        for Client in ConfiguredClients:
+                            match Client:
+                                case "PS3":
+                                    Config["ClientConfig"]["PS3"]["PS3Address"] = \
+                                        RecursivePrompt("PS3Address", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["PS3Address"])
+                                    Config["ClientConfig"]["PS3"]["NetworkName"] = \
+                                        RecursivePrompt("NetworkName", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkName"])
+                                    Config["ClientConfig"]["PS3"]["NetworkNameFull"] = \
+                                        RecursivePrompt("NetworkNameFull", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkNameFull"])
+                                    Config["ClientConfig"]["PS3"]["NetworkID"] = \
+                                        RecursivePrompt("NetworkID", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkID"])
+                                    Config["ClientConfig"]["PS3"]["UseCelsius"] = \
+                                        RecursivePrompt("UseCelsius", bool, DEFAULT_CONFIG["ClientConfig"]["PS3"]["UseCelsius"])
+                                
+                                case "WiiU":
+                                    Config["ClientConfig"]["WiiU"]["WiiUAddress"] = \
+                                        RecursivePrompt("WiiUAddress", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["WiiUAddress"])
+                                    Config["ClientConfig"]["WiiU"]["FirmwareVer"] = \
+                                        RecursivePrompt("FirmwareVer", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["FirmwareVer"])
+                                    Config["ClientConfig"]["WiiU"]["HWInfoText"] = \
+                                        RecursivePrompt("HWInfoText", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["HWInfoText"])
+                    case "PS3":
+                        Config["ClientConfig"]["PS3"]["PS3Address"] = \
+                            RecursivePrompt("PS3Address", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["PS3Address"])
+                        Config["ClientConfig"]["PS3"]["NetworkName"] = \
+                            RecursivePrompt("NetworkName", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkName"])
+                        Config["ClientConfig"]["PS3"]["NetworkNameFull"] = \
+                            RecursivePrompt("NetworkNameFull", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkNameFull"])
+                        Config["ClientConfig"]["PS3"]["NetworkID"] = \
+                            RecursivePrompt("NetworkID", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkID"])
+                        Config["ClientConfig"]["PS3"]["UseCelsius"] = \
+                            RecursivePrompt("UseCelsius", bool, DEFAULT_CONFIG["ClientConfig"]["PS3"]["UseCelsius"])
+                    case "PS3Address":
+                        Config["ClientConfig"]["PS3"]["PS3Address"] = \
+                            RecursivePrompt("PS3Address", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["PS3Address"])
+                    case "NetworkName":
+                        Config["ClientConfig"]["PS3"]["NetworkName"] = \
+                            RecursivePrompt("NetworkName", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkName"])
+                    case "NetworkNameFull":
+                        Config["ClientConfig"]["PS3"]["NetworkNameFull"] = \
+                            RecursivePrompt("NetworkNameFull", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkNameFull"])
+                    case "NetworkID":
+                        Config["ClientConfig"]["PS3"]["NetworkID"] = \
+                            RecursivePrompt("NetworkID", str, DEFAULT_CONFIG["ClientConfig"]["PS3"]["NetworkID"])
+                    case "UseCelsius":
+                        Config["ClientConfig"]["PS3"]["UseCelsius"] = \
+                            RecursivePrompt("UseCelsius", bool, DEFAULT_CONFIG["ClientConfig"]["PS3"]["UseCelsius"])
+
+                    case "WiiU":
+                        Config["ClientConfig"]["WiiU"]["WiiUAddress"] = \
+                            RecursivePrompt("WiiUAddress", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["WiiUAddress"])
+                        Config["ClientConfig"]["WiiU"]["FirmwareVer"] = \
+                            RecursivePrompt("FirmwareVer", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["FirmwareVer"])
+                        Config["ClientConfig"]["WiiU"]["HWInfoText"] = \
+                            RecursivePrompt("HWInfoText", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["HWInfoText"])
+                    case "WiiUAddress":
+                        Config["ClientConfig"]["WiiU"]["WiiUAddress"] = \
+                            RecursivePrompt("WiiUAddress", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["WiiUAddress"])
+                    case "FirmwareVer":
+                        Config["ClientConfig"]["WiiU"]["FirmwareVer"] = \
+                            RecursivePrompt("FirmwareVer", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["FirmwareVer"])
+                    case "HWInfoText":
+                        Config["ClientConfig"]["WiiU"]["HWInfoText"] = \
+                            RecursivePrompt("HWInfoText", str, DEFAULT_CONFIG["ClientConfig"]["WiiU"]["HWInfoText"])
         return
 
     # Bootstraping the DEFAULTINATOR !
@@ -187,6 +260,7 @@ def SanitizerTM(Config: dict):
 
     SanitizedConf, ChangedVars = DefaultInator(Config, DefaultInatorDefaults, DEFAULT_CONFIG)
 
+    print(ChangedVars)
     TelePrompter(ChangedVars, SanitizedConf)
 
     return SanitizedConf
