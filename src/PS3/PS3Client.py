@@ -1,5 +1,5 @@
 from .SmanParser import SmanHTMLParser
-from ConsoleClient import * 
+from ConsoleClient import ConsoleClient, ActiveClients
 from icmplib import ping
 import requests
 
