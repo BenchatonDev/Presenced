@@ -43,14 +43,14 @@ DEFAULT_CONFIG = {
     },
     "ClientConfig": {
         "PS3": {
-            "IpAddress": "",
+            "PS3Address": "X.X.X.X",
             "NetworkName": "PSN",
             "NetworkNameFull": "PlayStation Network",
             "NetworkID": "{anon-user}",
             "UseCelsius": True
         },
         "WiiU": {
-            "IpAddress": "",
+            "WiiUAddress": "X.X.X.X",
             "FirmwareVer": "{unknown-ver}",
             "HWInfoText": "IBM Espresso | AMD Latte"
         }

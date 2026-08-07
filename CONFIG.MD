@@ -327,7 +327,7 @@ The configuration for Presenced is represented as a dictionary which allows it t
   <details open>
     <summary>Click to see client configuration options</summary>
 
-  - **IpAddress** *[STR]* : Your console's IpAddress, required for the `ConsoleClient` to work, an invalid IP will just make the `ConsoleClient` probe the void but wont break anything
+  - **PS3Address** *[STR]* : Your PS3's IP address, required for the `ConsoleClient` to work, an invalid IP will just make the `ConsoleClient` probe the void but wont break anything
   - **NetworkName** *[STR]* : Acronym of the in-use Multiplayer Network for the *`info_network`* preset (i.e., `"PSN"`); if not set, will default to `"PSN"`
   - **NetworkNameFull** *[STR]* : Full name of the in-use Multiplayer Network for the *`network_name`* preset (i.e., `"PlayStation Network"`); if not set, will default to `"PlayStation Network"`
   - **NetworkID** *[STR]* : Your Multiplayer Network username for the *`info_network`* preset (i.e., `"Benchatooo"`); if not set, will default to `"{anon-user}"`
@@ -337,8 +337,8 @@ The configuration for Presenced is represented as a dictionary which allows it t
 - **Wii U** *[DICT]* : Special configuration for the *`WiiU`* `ConsoleClient`
   <details open>
     <summary>Click to see client configuration options</summary>
-    
-  - **IpAddress** *[STR]* : Your console's IpAddress, required for the `ConsoleClient` to work, an invalid IP will just make the `ConsoleClient` probe the void but wont break anything
+
+  - **WiiUAddress** *[STR]* : Your Wii U's IP address, required for the `ConsoleClient` to work, an invalid IP will just make the `ConsoleClient` probe the void but wont break anything
   - **FirmwareVer** *[STR]* : CafeOS version number for the *`info_firmware`* preset; can be found by going into settings (i.e., `"5.5.5E"`). If not set, will default to `"{unknown-ver}"`
   - **HWInfoText** *[STR]* : Information about your Wii U for the *`info_hardware`* preset (i.e., CPU/GPU name ➤ `"IBM Espresso | AMD Latte"`, board revision ➤ `"WUP-50"`, modchip if you want ➤ `"de_fuse"`, or anything hardware-related you can come up with); if not set, will default to `"IBM Espresso | AMD Latte"` for consistency with the PS3's `"Cell: {temp}°{C/F} | RSX: {temp}°{C/F}"`
   </details>
