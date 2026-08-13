@@ -1,27 +1,37 @@
 from .SmanParser import SmanHTMLParser
 from ConsoleClient import ConsoleClient, ActiveClients
 from icmplib import ping
-import requests
+from copy import deepcopy
+from requests import get
 
 RequestHeaders = { "User-Agent": "Mozilla/5.0" }
 
 class PS3Client(ConsoleClient):
 
     def pingConsole(self):
-        if ping(self.IpAddress, privileged=False).is_alive:
+        if ping(self.Config["PS3Address"], privileged=False, interval=0, timeout=1).is_alive:
             try:
-                requests.get(f"http://{self.IpAddress}", headers=RequestHeaders)
+                get(f"http://{self.Config["PS3Address"]}", headers=RequestHeaders, timeout=1)
 
             except:
-                ActiveClients.remove(self) if self in ActiveClients else None
+                ActiveClients.remove(self); self.ClientData["ConsoleData"], self.ClientData["OldConsoleData"] = {}, {} \
+                if self in ActiveClients else None
+
                 return
             
             else:
-                ActiveClients.insert(0, self) if self not in ActiveClients else None
-                SmanHTML = requests.get(f"http://{self.IpAddress}/cpursx.ps3?/sman.ps3", headers=RequestHeaders).text
+                ActiveClients.insert(0, self); self.ClientData["AppStartTime"] = 10 \
+                if self not in ActiveClients else None
 
-                self.ClientData = SmanHTMLParser(SmanHTML)
+                SmanHTML = get(f"http://{self.Config["PS3Address"]}/cpursx.ps3?/sman.ps3", headers=RequestHeaders).text
+
+                self.ClientData["OldConsoleData"] = deepcopy(self.ClientData)
+                self.ClientData["ConsoleData"] = SmanHTMLParser(SmanHTML)
 
         else:
-            ActiveClients.remove(self) if self in ActiveClients else None
+            ActiveClients.remove(self); self.ClientData["ConsoleData"], self.ClientData["OldConsoleData"] = {}, {} \
+            if self in ActiveClients else None
+
             return
+
+        return
