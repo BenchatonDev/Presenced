@@ -35,3 +35,6 @@ class PS3Client(ConsoleClient):
             return
 
         return
+
+    def getRPCData(self):
+            return
