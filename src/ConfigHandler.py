@@ -1,5 +1,5 @@
 from PS3.PS3Client import PS3Client
-import json; import copy; from typing import Any
+import json; import copy
 
 # Look a constant, in this economy ???
 DEFAULT_CONFIG = {
@@ -66,12 +66,10 @@ VALID_CLIENTS = ["PS3", "WiiU"]
 
 Config = {}
 
-Format = ""
-
-Format.endswith("Format")
-
 # TM for TradeMark, Have fun naming your most private of functions with silly names too~
 def SanitizerTM(Config: dict):
+    from typing import Any
+
     SanitizedConf = {}
     ConfiguredClients = []
     DefaultInatorDefaults = {}
@@ -372,7 +370,6 @@ def ConfigLoader(ConfigPath: str):
 
     return SanitizerTM(DirtyConfig)
 
-
 def ConfigSaver(ConfigPath: str, Config: dict):
     ConfigFile = open(f"{ConfigPath}/config.json", "w", encoding="utf-8")
 
@@ -384,7 +381,25 @@ def ConfigSaver(ConfigPath: str, Config: dict):
 def ConfigHandler(LocalPath: str):
     global Config
 
+    ClientConstructors = {
+        "PS3": PS3Client,
+        "WiiU": ConsoleClient
+    }
+
+
+    # Create / load a valid config
     Config = ConfigLoader(LocalPath)
+
+    for Client in Config["General"]["ConsoleClients"]:
+        match Client:
+
+            case "PS3":
+                PS3Conf
+
+                PS3Client()
+
+    ConfigSaver(LocalPath, Config)
+
 
 
 ## Over complicated path thingy for testing
@@ -394,7 +409,5 @@ path.pop(len(path) - 1); path.pop(len(path) - 1)
 path = "/".join(path)
 
 ConfigHandler(path)
-
-ConfigSaver(path, Config)
 
 print(Config)
