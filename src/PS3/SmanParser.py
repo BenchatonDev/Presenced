@@ -16,11 +16,11 @@ def SmanHTMLParser(html : str):
         # PS2 Classics completely unload WebMan and PS1 Classics don't create
         # this specific <a> tag, so this equivalent to an if PS3/PSP: statement
         if SmanContent.find("a", target="_blank"):
-            PS3Data['TitleID'] = SmanContent.find("a", target="_blank").text
+            PS3Data['TitleID'] = SmanContent.find("a", target="_blank").text # type: ignore
 
             # The TitleName <a> tag is always the next one to the title ID but can also
             # Be identified from it's href which always starts by "http://google.com"
-            TitleName = SmanContent.find("a", target="_blank").find_next_sibling().text
+            TitleName = SmanContent.find("a", target="_blank").find_next_sibling().text # type: ignore
 
             # All PS3 / PSP games have a version number that goes XX.XX, the regular
             # Expression below ignores the whole string exept the end checking if the
@@ -41,17 +41,17 @@ def SmanHTMLParser(html : str):
 
     # For the CPU and RSX temps we first isolate the IC's part from the <a> tag containing both
     # Then we use a second regular expression on the result to extract just the raw numbers
-    TempStr = SmanContent.find("a", href="/cpursx.ps3?up").text
-    PS3Data['CPUTemp']['C'] = re.search("[0-9]+" ,re.search("CPU(.+?)C", TempStr).group(0)).group(0)
-    PS3Data['RSXTemp']['C'] = re.search("[0-9]+" ,re.search("RSX(.+?)C", TempStr).group(0)).group(0)
+    TempStr = SmanContent.find("a", href="/cpursx.ps3?up").text # type: ignore
+    PS3Data['CPUTemp']['C'] = re.search("[0-9]+" ,re.search("CPU(.+?)C", TempStr).group(0)).group(0) # type: ignore
+    PS3Data['RSXTemp']['C'] = re.search("[0-9]+" ,re.search("RSX(.+?)C", TempStr).group(0)).group(0) # type: ignore
 
-    TempStr = SmanContent.find("a", href="/cpursx.ps3?dn").text
-    PS3Data['CPUTemp']['F'] = re.search("[0-9]+" ,re.search("CPU(.+?)F", TempStr).group(0)).group(0)
-    PS3Data['RSXTemp']['F'] = re.search("[0-9]+" ,re.search("RSX(.+?)F", TempStr).group(0)).group(0)
+    TempStr = SmanContent.find("a", href="/cpursx.ps3?dn").text # type: ignore
+    PS3Data['CPUTemp']['F'] = re.search("[0-9]+" ,re.search("CPU(.+?)F", TempStr).group(0)).group(0) # type: ignore
+    PS3Data['RSXTemp']['F'] = re.search("[0-9]+" ,re.search("RSX(.+?)F", TempStr).group(0)).group(0) # type: ignore
 
     # For fanspeed we just extract the number directly since it's the only one in the char sequence
-    TempStr = SmanContent.find("a", href="/cpursx.ps3?mode").text
-    PS3Data['FanSpeed'] = re.search("[0-9]+", TempStr).group(0)
+    TempStr = SmanContent.find("a", href="/cpursx.ps3?mode").text # type: ignore
+    PS3Data['FanSpeed'] = re.search("[0-9]+", TempStr).group(0) # type: ignore
 
     # Firmware version is annoying, the string we are looking for is the first
     # Segment of the sequence before the "PSID" string so we extract that, then we look
@@ -60,7 +60,7 @@ def SmanHTMLParser(html : str):
     # The string at each space char, since the firmware type comes right after the
     # Version number we can then just join back the first 2 indexes of the split string
     # To get the exact firmware version and type formated like this: X.XX CEX / DEX
-    TempStr = SmanContent.find("a", href="/setup.ps3").text
-    PS3Data['Firmware'] = ' '.join(re.search("[0-9].[0-9]{2}(.*)", re.search("(.+?)PSID(.+?)", TempStr).group(1)).group(0).split(' ')[0:2])
+    TempStr = SmanContent.find("a", href="/setup.ps3").text # type: ignore
+    PS3Data['Firmware'] = ' '.join(re.search("[0-9].[0-9]{2}(.*)", re.search("(.+?)PSID(.+?)", TempStr).group(1)).group(0).split(' ')[0:2]) # type: ignore
 
     return PS3Data
