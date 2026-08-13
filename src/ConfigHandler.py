@@ -1,5 +1,5 @@
 from PS3.PS3Client import PS3Client
-import json; import copy
+import json; import copy; from typing import Any
 
 # Look a constant, in this economy ???
 DEFAULT_CONFIG = {
@@ -61,15 +61,14 @@ DEFAULT_CONFIG = {
     }
 }
 
-VALUES_TO_CHECK = {
-    "Presence": { "Format": { "DisplayType": range(1, 3), "AppName": [] } },
-    "ClientConfig": { "WiiU": { "UDPPort": range(0, 65535) } }
-}
-
 # More Constants ??? Oh my, Oh my !
 VALID_CLIENTS = ["PS3", "WiiU"]
 
 Config = {}
+
+Format = ""
+
+Format.endswith("Format")
 
 # TM for TradeMark, Have fun naming your most private of functions with silly names too~
 def SanitizerTM(Config: dict):
@@ -143,48 +142,81 @@ def SanitizerTM(Config: dict):
 
         return ValidToken
 
-    def SuperCheck(RuleSet: list):
+    def SuperChecker(DefaultInatorDefaults: dict, Config: dict):
+        # Members of the checklist go like this (ConfigSegment [it's a dict], Key, Operator, DefaultValue)
+        TheCheckListTM = [
+            Presence
+            for Format, Value in DefaultInatorDefaults["Presence"].items()
+            if Format.endswith("Format") and isinstance(Value, dict)
+            for Presence in (
+            (Config["Presence"][Format], "DisplayType", "in", range(1, 3), DEFAULT_CONFIG["Presence"][Format]["DisplayType"]),
+            (Config["Presence"][Format], "AppName", "!=", "", DEFAULT_CONFIG["Presence"][Format]["AppName"])
+            )] + \
+            [(Config["ClientConfig"]["WiiU"], "UDPPort", "in", range(0, 65535), DEFAULT_CONFIG["ClientConfig"]["WiiU"]["UDPPort"])]
+
         # Just a vert dumb switch statement to apply the rules, you have to think in reverse
-        # To understand the statement tho, for exemple let's say we want out value X to be in
+        # To understand the statements tho, for exemple let's say we want out value X to be in
         # A range of 10 to a 1000, else go to the default value then you call TheRuler with the
         # Parameter (X, range(10, 1000), "in", DefaultVal) so the function will actually check
-        # If it's not in this range, see where this is going ?
-        def TheRuler(Value: object, ComparedValue: object, Operator: str, Defaultvalue: object):
+        # If it's not in this range, see where this is going ? It applies the default it the value
+        # Doesn't respect the rule that's why the logic is all reversed in the if statements
+        def TheRuler(Value: Any, Operator: str, ComparedValue: Any, DefaultValue: Any):
             from collections.abc import Iterable
+            
             Operator = "".join(Operator.strip().lower().split(" ")[::])
-
             IterOperators = ["in", "notin"]
             NormalOperators = [ "==", "!=", ">=", ">", "<=", "<"]
 
             # Safety first boys
             if Operator not in IterOperators + NormalOperators:
-                return
+                return Value
             elif Operator in IterOperators and not isinstance(ComparedValue, Iterable):
-                return
+                return Value
+            elif Operator in NormalOperators[2::]:
+                if isinstance(Value, (str, bytes, Iterable)) or isinstance(ComparedValue, (str, bytes, Iterable)):
+                    return Value
+
+            # For strings Remove trailing whitespaces because why not ?
+            # It's really just there for the AppName field
+            if isinstance(Value, str): Value.strip()
+            if isinstance(ComparedValue, str): ComparedValue.strip()
 
             match Operator:
-
                 # Iterable Checks
                 case "in":
                     if Value not in ComparedValue:
-                        Value = Defaultvalue
-
+                        return DefaultValue
+                    
                 case "notin":
-                    if Value not in ComparedValue:
-                        Value = Defaultvalue
-
+                    if Value in ComparedValue:
+                        return DefaultValue
+                
                 # Normal Checks
-                case "in":
-                    if Value not in ComparedValue:
-                        Value = Defaultvalue
+                case "==":
+                    if Value != ComparedValue:
+                        return DefaultValue
+                case "!=":
+                    if Value == ComparedValue:
+                        return DefaultValue
 
-                case "in":
-                    if Value not in ComparedValue:
-                        Value = Defaultvalue
-                                    
+                case ">=":
+                    if Value < ComparedValue: # type: ignore (Hides the Error squigle since that case is already handled above)
+                        return DefaultValue
+                case ">":
+                    if Value <= ComparedValue: # type: ignore (Hides the Error squigle since that case is already handled above)
+                        return DefaultValue
 
+                case "<=":
+                    if Value > ComparedValue: # type: ignore (Hides the Error squigle since that case is already handled above)
+                        return DefaultValue
+                case "<":
+                    if Value >= ComparedValue: # type: ignore (Hides the Error squigle since that case is already handled above)
+                       return DefaultValue
 
-        TheRuler("", "not in","")
+            return Value
+
+        for Setting in TheCheckListTM:
+            Setting[0][Setting[1]] = TheRuler(Setting[0][Setting[1]], Setting[2], Setting[3], Setting[4])
 
     def TelePrompter(ChangedVars: list, Config: dict):
         # While pretty flexible TelePrompter is onl meant to handle single values, to support anything other than Bool, Int, and Str
@@ -235,7 +267,7 @@ def SanitizerTM(Config: dict):
 
             return
 
-        def RecursivePrompt(VariableName: str, VariableType: type, VariableDefault: object):
+        def RecursivePrompt(VariableName: str, VariableType: type, VariableDefault: Any):
             HasDefault = ": " if not VariableDefault else f"(ENTER to use default of \"{VariableDefault}\"): " 
             VariableValue = None
 
@@ -300,14 +332,17 @@ def SanitizerTM(Config: dict):
 
     TelePrompter(ChangedVars, SanitizedConf)
 
-    # Value checking pass
+    # Checking validity of important settings
     SanitizedConf["General"]["AppID"] = AppIDChecker(SanitizedConf["General"]["AppID"])
 
     if not SanitizedConf["General"]["PyPresenceBackend"]:
         SanitizedConf["General"]["DiscordPyToken"] = UserTokenChecker(SanitizedConf["General"]["DiscordPyToken"])
 
-    # Presence Format Checking
-    SuperCheck([])
+    # All other settings that need checking are handled by the SuperChecker
+    # If I or You ig, need to add a value to the super checker list then
+    # Go to the function's definition and add it to TheCheckListTM which
+    # should be the first thing defined in the function for easy access
+    SuperChecker(DefaultInatorDefaults ,SanitizedConf)
 
     return SanitizedConf
 
