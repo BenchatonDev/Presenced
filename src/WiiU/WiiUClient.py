@@ -3,7 +3,7 @@ from icmplib import ping
 from copy import deepcopy
 
 
-class PS3Client(ConsoleClient):
+class WiiUClient(ConsoleClient):
 
     def pingConsole(self):
 
