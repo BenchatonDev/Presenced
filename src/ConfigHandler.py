@@ -147,12 +147,14 @@ def SanitizerTM(Config: dict):
         TheCheckListTM = [
             Presence
             for Format, Value in DefaultInatorDefaults["Presence"].items()
-            if Format.endswith("Format") and isinstance(Value, dict)
-            for Presence in (
-            (Config["Presence"][Format], "DisplayType", "in", range(1, 3), DEFAULT_CONFIG["Presence"][Format]["DisplayType"]),
-            (Config["Presence"][Format], "AppName", "!=", "", DEFAULT_CONFIG["Presence"][Format]["AppName"])
-            )] + \
-            [(Config["ClientConfig"]["WiiU"], "UDPPort", "in", range(0, 65535), DEFAULT_CONFIG["ClientConfig"]["WiiU"]["UDPPort"])]
+                if Format.endswith("Format") and isinstance(Value, dict)
+            for Presence in 
+                ((Config["Presence"][Format], "DisplayType", "in", range(1, 3), DEFAULT_CONFIG["Presence"][Format]["DisplayType"]),
+                (Config["Presence"][Format], "AppName", "!=", "", DEFAULT_CONFIG["Presence"][Format]["AppName"]))
+        ]
+        TheCheckListTM += [
+            (Config["ClientConfig"]["WiiU"], "UDPPort", "in", range(0, 65535), DEFAULT_CONFIG["ClientConfig"]["WiiU"]["UDPPort"])
+        ]
 
         # Just a vert dumb switch statement to apply the rules, you have to think in reverse
         # To understand the statements tho, for exemple let's say we want out value X to be in
@@ -178,8 +180,8 @@ def SanitizerTM(Config: dict):
 
             # For strings Remove trailing whitespaces because why not ?
             # It's really just there for the AppName field
-            if isinstance(Value, str): Value.strip()
-            if isinstance(ComparedValue, str): ComparedValue.strip()
+            if isinstance(Value, str): Value = Value.strip()
+            if isinstance(ComparedValue, str): ComparedValue = ComparedValue.strip()
 
             match Operator:
                 # Iterable Checks
@@ -252,18 +254,21 @@ def SanitizerTM(Config: dict):
                     TreeClimber(Branch, Tree, (True, GenealogicalTree, Config[Branch], DEFAULT_CONFIG[Branch]))
 
             else:
-                GenealogicalTree.pop(-1)
-                if GenealogicalTree:
+                
+                if len(GenealogicalTree) > 2:
+                    GenealogicalTree.pop(-1)
                     TreeClimber(GenealogicalTree[-1], Tree, \
                                 (True, GenealogicalTree, ConfigFold[GenealogicalTree[-1]], DefaultConfigFold[GenealogicalTree[-1]]))
                     
                 else:
-                    if Tree[Branch][1]:
-                        for Child in Tree[Branch][1]:
+                    Key = GenealogicalTree[0]
+                    
+                    if Tree[Key][1]:
+                        for Child in Tree[Key][1]:
                             TreeClimber(Child, Tree)
 
                     else:
-                        ConfigFold = RecursivePrompt(Branch, type(DefaultConfigFold), DefaultConfigFold)
+                        ConfigFold[Key] = RecursivePrompt(Key, type(DefaultConfigFold[Key]), DefaultConfigFold[Key])
 
             return
 
@@ -304,7 +309,7 @@ def SanitizerTM(Config: dict):
                 if Var in AttentionSeekingVars:
                     TreeClimber(Var, AttentionSeekingVars)
 
-        return Config
+        return
 
     # Bootstraping the DEFAULTINATOR !
     if isinstance(Config.get("General"), dict) and isinstance(Config["General"].get("ConsoleClients"), list):
@@ -331,7 +336,7 @@ def SanitizerTM(Config: dict):
     SanitizedConf, ChangedVars = DefaultInator(Config, DefaultInatorDefaults, DEFAULT_CONFIG)
 
     TelePrompter(ChangedVars, SanitizedConf)
-
+    
     # Checking validity of important settings
     SanitizedConf["General"]["AppID"] = AppIDChecker(SanitizedConf["General"]["AppID"])
 
@@ -342,7 +347,7 @@ def SanitizerTM(Config: dict):
     # If I or You ig, need to add a value to the super checker list then
     # Go to the function's definition and add it to TheCheckListTM which
     # should be the first thing defined in the function for easy access
-    SuperChecker(DefaultInatorDefaults ,SanitizedConf)
+    SuperChecker(DefaultInatorDefaults, SanitizedConf)
 
     return SanitizedConf
 
@@ -376,13 +381,19 @@ def ConfigSaver(ConfigPath: str, Config: dict):
 
     return
 
+def ConfigHandler(LocalPath: str):
+    global Config
+
+    Config = ConfigLoader(LocalPath)
+
+
 ## Over complicated path thingy for testing
 import os
 path = os.path.abspath(__file__).split("/")
 path.pop(len(path) - 1); path.pop(len(path) - 1)
 path = "/".join(path)
 
-Config = ConfigLoader(path)
+ConfigHandler(path)
 
 ConfigSaver(path, Config)
 
