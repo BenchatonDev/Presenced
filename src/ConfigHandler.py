@@ -14,6 +14,7 @@ DEFAULT_CONFIG = {
         "UseCommonFormat": True,
         "ResetTimeOnAppChange": True,
         "CommonFormat": {
+            "DisplayType": 2,
             "AppName": "console_name",
             "Details1": "app_name",
             "Details2": "info_network",
@@ -23,6 +24,7 @@ DEFAULT_CONFIG = {
             "ImageSmallType": "image_console"
         },
         "PS3Format": {
+            "DisplayType": 2,
             "AppName": "console_name",
             "Details1": "app_name",
             "Details2": "info_network",
@@ -32,6 +34,7 @@ DEFAULT_CONFIG = {
             "ImageSmallType": "image_console"
         },
         "WiiUFormat": {
+            "DisplayType": 2,
             "AppName": "console_name",
             "Details1": "app_name",
             "Details2": "info_network",
@@ -51,10 +54,16 @@ DEFAULT_CONFIG = {
         },
         "WiiU": {
             "WiiUAddress": "X.X.X.X",
+            "UDPPort": 5005,
             "FirmwareVer": "{unknown-ver}",
             "HWInfoText": "IBM Espresso | AMD Latte"
         }
     }
+}
+
+VALUES_TO_CHECK = {
+    "Presence": { "Format": { "DisplayType": range(1, 3), "AppName": [] } },
+    "ClientConfig": { "WiiU": { "UDPPort": range(0, 65535) } }
 }
 
 # More Constants ??? Oh my, Oh my !
@@ -134,6 +143,49 @@ def SanitizerTM(Config: dict):
 
         return ValidToken
 
+    def SuperCheck(RuleSet: list):
+        # Just a vert dumb switch statement to apply the rules, you have to think in reverse
+        # To understand the statement tho, for exemple let's say we want out value X to be in
+        # A range of 10 to a 1000, else go to the default value then you call TheRuler with the
+        # Parameter (X, range(10, 1000), "in", DefaultVal) so the function will actually check
+        # If it's not in this range, see where this is going ?
+        def TheRuler(Value: object, ComparedValue: object, Operator: str, Defaultvalue: object):
+            from collections.abc import Iterable
+            Operator = "".join(Operator.strip().lower().split(" ")[::])
+
+            IterOperators = ["in", "notin"]
+            NormalOperators = [ "==", "!=", ">=", ">", "<=", "<"]
+
+            # Safety first boys
+            if Operator not in IterOperators + NormalOperators:
+                return
+            elif Operator in IterOperators and not isinstance(ComparedValue, Iterable):
+                return
+
+            match Operator:
+
+                # Iterable Checks
+                case "in":
+                    if Value not in ComparedValue:
+                        Value = Defaultvalue
+
+                case "notin":
+                    if Value not in ComparedValue:
+                        Value = Defaultvalue
+
+                # Normal Checks
+                case "in":
+                    if Value not in ComparedValue:
+                        Value = Defaultvalue
+
+                case "in":
+                    if Value not in ComparedValue:
+                        Value = Defaultvalue
+                                    
+
+
+        TheRuler("", "not in","")
+
     def TelePrompter(ChangedVars: list, Config: dict):
         # While pretty flexible TelePrompter is onl meant to handle single values, to support anything other than Bool, Int, and Str
         # You'll need to update the Recursive Prompt function, happy coding to you I guess, unless you're me then fuck you future me
@@ -147,7 +199,8 @@ def SanitizerTM(Config: dict):
                                 "PS3Address": ("PS3", None), "NetworkName": ("PS3", None), "NetworkNameFull": ("PS3", None),
                                 "NetworkID": ("PS3", None), "UseCelsius": ("PS3", None), # This is filler text so no gap here
                                 "WiiU": ("ClientConfig", [Child for Child in DEFAULT_CONFIG["ClientConfig"]["WiiU"].keys()]),
-                                "WiiUAddress": ("WiiU", None), "FirmwareVer": ("WiiU", None), "HWInfoText": ("WiiU", None)}
+                                "WiiUAddress": ("WiiU", None), "FirmwareVer": ("WiiU", None), "HWInfoText": ("WiiU", None),
+                                "UDPPort": ("WiiU", None)} # More useless text to fill the gap because it looks better imo ;)
 
         def TreeClimber(Branch: str, Tree: dict[str, tuple], _Propagator: tuple[bool, list, dict, dict] | None = None):
             ShouldPropagate, GenealogicalTree, ConfigFold, DefaultConfigFold = _Propagator if _Propagator else (False, [], {}, {})
@@ -247,14 +300,23 @@ def SanitizerTM(Config: dict):
 
     TelePrompter(ChangedVars, SanitizedConf)
 
+    # Value checking pass
+    SanitizedConf["General"]["AppID"] = AppIDChecker(SanitizedConf["General"]["AppID"])
+
+    if not SanitizedConf["General"]["PyPresenceBackend"]:
+        SanitizedConf["General"]["DiscordPyToken"] = UserTokenChecker(SanitizedConf["General"]["DiscordPyToken"])
+
+    # Presence Format Checking
+    SuperCheck([])
+
     return SanitizedConf
 
-def ConfigLoader():
+def ConfigLoader(ConfigPath: str):
     ConfigFile = None
     DirtyConfig = {}
     
     try:
-        ConfigFile = open("config.json", "r")
+        ConfigFile = open(f"{ConfigPath}/config.json", "r", encoding="utf-8")
     except FileNotFoundError:
         print("Config File not found, File will be created")
 
@@ -270,6 +332,23 @@ def ConfigLoader():
 
     return SanitizerTM(DirtyConfig)
 
-Config = ConfigLoader()
 
-#print(Config)
+def ConfigSaver(ConfigPath: str, Config: dict):
+    ConfigFile = open(f"{ConfigPath}/config.json", "w", encoding="utf-8")
+
+    json.dump(Config, ConfigFile, indent=4)
+    ConfigFile.close()
+
+    return
+
+## Over complicated path thingy for testing
+import os
+path = os.path.abspath(__file__).split("/")
+path.pop(len(path) - 1); path.pop(len(path) - 1)
+path = "/".join(path)
+
+Config = ConfigLoader(path)
+
+ConfigSaver(path, Config)
+
+print(Config)

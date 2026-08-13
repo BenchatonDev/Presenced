@@ -25,7 +25,18 @@ The configuration for Presenced is represented as a dictionary which allows it t
   <details>
     <summary>Click to see subfields</summary>
 
-  - **AppName** *[STR]* : What gets displayed after the `"Playing"` text on Discord
+  - **DisplayType** *[INT]* : What gets displayed after the `"Playing"` text on Discord
+    <details>
+        <summary>Click to see field options</summary>
+
+      - *1* **➤** Displays the content of **AppName** after the `"Playing"` text on Discord
+      - *2* (***Default***) **➤** Displays the content of **Details1** after the `"Playing"` text on Discord
+      - *3* **➤** Displays the content of **Details2** after the `"Playing"` text on Discord
+      - *{customvalue}* **➤** In case none of the above are provided the default value will be applied
+    
+    </details>
+
+  - **AppName** *[STR]* : The header / bold line of the Presence details
     <details>
         <summary>Click to see field options</summary>
 
@@ -124,6 +135,17 @@ The configuration for Presenced is represented as a dictionary which allows it t
 - **PS3Format** *[DICT]* : Decides how fields are filled for the PS3 `ConsoleClient`, same fields as [CommonFormat](#common-format)
   <details>
     <summary>Click to see subfields</summary>
+
+  - **DisplayType** *[INT]* : What gets displayed after the `"Playing"` text on Discord
+    <details>
+        <summary>Click to see field options</summary>
+
+      - *1* **➤** Displays the content of **AppName** after the `"Playing"` text on Discord
+      - *2* (***Default***) **➤** Displays the content of **Details1** after the `"Playing"` text on Discord
+      - *3* **➤** Displays the content of **Details2** after the `"Playing"` text on Discord
+      - *{customvalue}* **➤** In case none of the above are provided the default value will be applied
+    
+    </details>
 
   - **AppName** *[STR]* : What gets displayed after the `"Playing"` text on Discord
     <details>
@@ -224,6 +246,17 @@ The configuration for Presenced is represented as a dictionary which allows it t
 - **WiiUFormat** *[DICT]* : Decides how fields are filled for the Wii U `ConsoleClient`, same fields as [CommonFormat](#common-format)
   <details>
     <summary>Click to see subfields</summary>
+
+  - **DisplayType** *[INT]* : What gets displayed after the `"Playing"` text on Discord
+    <details>
+        <summary>Click to see field options</summary>
+
+      - *1* **➤** Displays the content of **AppName** after the `"Playing"` text on Discord
+      - *2* (***Default***) **➤** Displays the content of **Details1** after the `"Playing"` text on Discord
+      - *3* **➤** Displays the content of **Details2** after the `"Playing"` text on Discord
+      - *{customvalue}* **➤** In case none of the above are provided the default value will be applied
+    
+    </details>
 
   - **AppName** *[STR]* : What gets displayed after the `"Playing"` text on Discord
     <details>
@@ -339,6 +372,7 @@ The configuration for Presenced is represented as a dictionary which allows it t
     <summary>Click to see client configuration options</summary>
 
   - **WiiUAddress** *[STR]* : Your Wii U's IP address, required for the `ConsoleClient` to work, an invalid IP will just make the `ConsoleClient` probe the void but wont break anything
+  - **UDPPort** *[STR]* : UDP port used by the *Rich Presence U* Aroma plugin, required for the `ConsoleClient` to work, an invalid port will just make the `ConsoleClient` probe the void but wont break anything
   - **FirmwareVer** *[STR]* : CafeOS version number for the *`info_firmware`* preset; can be found by going into settings (i.e., `"5.5.5E"`). If not set, will default to `"{unknown-ver}"`
   - **HWInfoText** *[STR]* : Information about your Wii U for the *`info_hardware`* preset (i.e., CPU/GPU name ➤ `"IBM Espresso | AMD Latte"`, board revision ➤ `"WUP-50"`, modchip if you want ➤ `"de_fuse"`, or anything hardware-related you can come up with); if not set, will default to `"IBM Espresso | AMD Latte"` for consistency with the PS3's `"Cell: {temp}°{C/F} | RSX: {temp}°{C/F}"`
   </details>
