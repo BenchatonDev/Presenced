@@ -1,12 +1,13 @@
 from PS3.PS3Client import PS3Client
-import json; import copy
+from WiiU.WiiUClient import WiiUClient
+import json; from copy import deepcopy
 
 # Look a constant, in this economy ???
 DEFAULT_CONFIG = {
     "General": {
         "AppID": "1534965343422906582",
         "DiscordPyToken": "DISCORD_USER_TOKEN_HERE",
-        "PollInterval": 20,
+        "PollInterval": 10,
         "ConsoleClients": "all",
         "PyPresenceBackend": True
     },
@@ -320,7 +321,7 @@ def SanitizerTM(Config: dict):
     if isinstance(Config.get("Presence"), dict) and isinstance(Config["Presence"].get("UseCommonFormat"), bool):
         CareOnlyCommonFormat = Config["Presence"].get("UseCommonFormat")
 
-    DefaultInatorDefaults = copy.deepcopy(DEFAULT_CONFIG)
+    DefaultInatorDefaults = deepcopy(DEFAULT_CONFIG)
 
     # Only DefaultInate Clients that will be used
     for Client in VALID_CLIENTS: 
@@ -383,24 +384,28 @@ def ConfigHandler(LocalPath: str):
 
     ClientConstructors = {
         "PS3": PS3Client,
-        "WiiU": ConsoleClient
+        "WiiU": WiiUClient
     }
-
 
     # Create / load a valid config
     Config = ConfigLoader(LocalPath)
 
-    for Client in Config["General"]["ConsoleClients"]:
-        match Client:
+    ConfiguredClients = VALID_CLIENTS if not isinstance(Config["General"]["ConsoleClients"], list) \
+                                      else Config["General"]["ConsoleClients"]
+    for Client in ConfiguredClients:
+        ClientConf = {
+            "Presence": {
+                "ResetTimeOnAppChange": Config["Presence"]["ResetTimeOnAppChange"],
+                "Format": deepcopy(Config["Presence"]["CommonFormat"]) if Config["Presence"]["UseCommonFormat"] \
+                            else deepcopy(Config["Presence"][f"{Client}Format"])
+            }
+        }; ClientConf.update(Config["ClientConfig"][Client].items())
 
-            case "PS3":
-                PS3Conf
-
-                PS3Client()
+        ClientConstructors[Client](ClientConf)
 
     ConfigSaver(LocalPath, Config)
 
-
+    return
 
 ## Over complicated path thingy for testing
 import os
@@ -410,4 +415,14 @@ path = "/".join(path)
 
 ConfigHandler(path)
 
-print(Config)
+from ConsoleClient import (Clients, ActiveClients)
+import time
+
+while True:
+    for Client in Clients:
+        Client.pingConsole()
+
+    for Active in ActiveClients:
+        print(Active.ClientData)
+
+    time.sleep(Config["General"]["PollInterval"])
