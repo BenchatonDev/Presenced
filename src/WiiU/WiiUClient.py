@@ -1,4 +1,4 @@
-from .ConnectionHelper import WiiUConnector
+from .ConnectionHelper import WiiUConnector, ToEpoch
 from ConsoleClient import ConsoleClient, ActiveClients
 from datetime import datetime, timezone
 from copy import deepcopy
@@ -14,7 +14,7 @@ class WiiUClient(ConsoleClient):
                 self.ClientData["AppStartTime"] = int(datetime.now(timezone.utc).timestamp())
 
             if self.Config["Presence"]["ResetTimeOnAppChange"]:
-                self.ClientData["AppStartTime"] = WiiUData["Time"]
+                self.ClientData["AppStartTime"] = ToEpoch(WiiUData["Time"])
             WiiUData.pop("Time")
             
             self.ClientData["OldConsoleData"] = deepcopy(self.ClientData["ConsoleData"])
