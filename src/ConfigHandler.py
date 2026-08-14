@@ -289,7 +289,7 @@ def SanitizerTM(Config: dict):
                         elif UserInput.lower() in ["false", "f", "0", "n", ""]:
                             VariableValue = False
                         else:
-                            int("This guy is trying to cause a type error or smt")
+                            raise ValueError
                     else:
                         VariableValue = VariableType(UserInput)
                 except (TypeError, ValueError):
