@@ -30,13 +30,17 @@ class PS3Client(ConsoleClient):
                 self.ClientData["OldConsoleData"] = deepcopy(self.ClientData["ConsoleData"])
                 self.ClientData["ConsoleData"] = SmanHTMLParser(SmanHTML)
 
+                if self.Config["Presence"]["ResetTimeOnAppChange"] and \
+                   self.ClientData["OldConsoleData"]["TitleID"] != self.ClientData["ConsoleData"]["TitleID"]:
+                    self.ClientData["AppStartTime"] = int(datetime.now(timezone.utc).timestamp())
+
         else:
-            ActiveClients.remove(self); self.ClientData["ConsoleData"], self.ClientData["OldConsoleData"] = {}, {} \
-            if self in ActiveClients else None
+            if self in ActiveClients: ActiveClients.remove(self); \
+                self.ClientData["ConsoleData"], self.ClientData["OldConsoleData"] = {}, {}
 
             return
 
         return
 
     def getRPCData(self):
-            return
+        return {}
