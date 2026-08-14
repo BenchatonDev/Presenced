@@ -54,7 +54,6 @@ DEFAULT_CONFIG = {
             "UseCelsius": True
         },
         "WiiU": {
-            "WiiUAddress": "X.X.X.X",
             "UDPPort": 5005,
             "FirmwareVer": "{unknown-ver}",
             "HWInfoText": "IBM Espresso | AMD Latte"

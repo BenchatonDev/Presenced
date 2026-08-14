@@ -371,7 +371,6 @@ The configuration for Presenced is represented as a dictionary which allows it t
   <details open>
     <summary>Click to see client configuration options</summary>
 
-  - **WiiUAddress** *[STR]* : Your Wii U's IP address, required for the `ConsoleClient` to work, an invalid IP will just make the `ConsoleClient` probe the void but wont break anything
   - **UDPPort** *[STR]* : UDP port used by the *Rich Presence U* Aroma plugin, required for the `ConsoleClient` to work, an invalid port will just make the `ConsoleClient` probe the void but wont break anything
   - **FirmwareVer** *[STR]* : CafeOS version number for the *`info_firmware`* preset; can be found by going into settings (i.e., `"5.5.5E"`). If not set, will default to `"{unknown-ver}"`
   - **HWInfoText** *[STR]* : Information about your Wii U for the *`info_hardware`* preset (i.e., CPU/GPU name ➤ `"IBM Espresso | AMD Latte"`, board revision ➤ `"WUP-50"`, modchip if you want ➤ `"de_fuse"`, or anything hardware-related you can come up with); if not set, will default to `"IBM Espresso | AMD Latte"` for consistency with the PS3's `"Cell: {temp}°{C/F} | RSX: {temp}°{C/F}"`
