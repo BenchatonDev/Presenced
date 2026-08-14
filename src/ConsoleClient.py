@@ -39,4 +39,4 @@ class ConsoleClient:
         """ This Function will be called for the active client chosen to be displayed on your discord profile,
         it's point is to return the right stuff to the function that will handle the communication with discord """
         
-        return
+        return {}
