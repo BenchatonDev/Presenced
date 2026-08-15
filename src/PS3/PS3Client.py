@@ -1,5 +1,5 @@
 from .SmanParser import SmanHTMLParser
-from ConsoleClient import ConsoleClient, ActiveClients
+from ConsoleClient import ConsoleClient, ActiveClients, RPCFormat
 from datetime import datetime, timezone
 from icmplib import ping
 from copy import deepcopy
@@ -31,7 +31,7 @@ class PS3Client(ConsoleClient):
                 self.ClientData["ConsoleData"] = SmanHTMLParser(SmanHTML)
 
                 if self.Config["Presence"]["ResetTimeOnAppChange"] and \
-                   self.ClientData["OldConsoleData"]["TitleID"] != self.ClientData["ConsoleData"]["TitleID"]:
+                   self.ClientData["OldConsoleData"].get("TitleID") != self.ClientData["ConsoleData"].get("TitleID"):
                     self.ClientData["AppStartTime"] = int(datetime.now(timezone.utc).timestamp())
 
         else:
@@ -43,4 +43,24 @@ class PS3Client(ConsoleClient):
         return
 
     def getRPCData(self):
-        return {}
+        if self not in ActiveClients: return {}
+
+        TemperatureUnit = "C" if self.Config.get("UseCelsius") else "F"
+
+        TextRules = {
+            "console_name":  lambda : "PlayStation 3",
+            "app_name":      lambda : self.ClientData["ConsoleData"].get("TitleName"),
+            "network_name":  lambda : self.Config.get("NetworkNameFull"),
+            "info_firmware": lambda : f"GameOS: {self.ClientData["ConsoleData"].get("Firmware")}",
+            "info_network":  lambda : f"{self.Config.get("NetworkName")}: {self.Config.get("NetworkID")}",
+            "info_hardware": lambda : f"Cell: {self.ClientData["ConsoleData"]["CPUTemp"].get(TemperatureUnit)}°{TemperatureUnit} | RSX: {\
+                                        self.ClientData["ConsoleData"]["RSXTemp"].get(TemperatureUnit)}°{TemperatureUnit}"
+        }
+
+        ImageRules = {
+            "image_app": lambda : "unknown", # URL resolved by an helper function I have yet to implement
+            "image_console": lambda : "ps3", # Change that to a URL or asset name if you ever change the AppID
+            "image_network": lambda : "playstation" if self.Config.get("NetworkName") == "PSN" else "unknown"
+        }
+
+        return RPCFormat(TextRules, ImageRules, self.Config["Presence"].get("Format"), self.ClientData["AppStartTime"])
