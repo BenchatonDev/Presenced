@@ -148,7 +148,8 @@ def SanitizerTM(Config: dict):
                 if Format.endswith("Format") and isinstance(Value, dict)
             for Presence in 
                 ((Config["Presence"][Format], "DisplayType", "in", range(1, 3), DEFAULT_CONFIG["Presence"][Format]["DisplayType"]),
-                (Config["Presence"][Format], "AppName", "!=", "", DEFAULT_CONFIG["Presence"][Format]["AppName"]))
+                (Config["Presence"][Format], "AppName", "!=", "", DEFAULT_CONFIG["Presence"][Format]["AppName"]),
+                (Config["Presence"][Format], "ImageBigType", "!=", "", DEFAULT_CONFIG["Presence"][Format]["ImageBigType"]))
         ]
         TheCheckListTM += [
             (Config["ClientConfig"]["WiiU"], "UDPPort", "in", range(0, 65535), DEFAULT_CONFIG["ClientConfig"]["WiiU"]["UDPPort"])
@@ -309,6 +310,19 @@ def SanitizerTM(Config: dict):
 
         return
 
+    def Striper(Config: dict):
+        # Super Simple Recursive Function
+        # That strips all strings in the config
+
+        for Key, Value in Config.items():
+            if isinstance(Value, dict):
+                Striper(Config[Key])
+            elif isinstance(Value, str):
+                Config[Key] = Value.strip()
+
+        return
+            
+
     # Bootstraping the DEFAULTINATOR !
     if isinstance(Config.get("General"), dict) and isinstance(Config["General"].get("ConsoleClients"), list):
         ConfiguredClients = [Client for Client in Config["General"].get("ConsoleClients") if Client in VALID_CLIENTS] \
@@ -334,6 +348,8 @@ def SanitizerTM(Config: dict):
     SanitizedConf, ChangedVars = DefaultInator(Config, DefaultInatorDefaults, DEFAULT_CONFIG)
 
     TelePrompter(ChangedVars, SanitizedConf)
+
+    Striper(SanitizedConf)
     
     # Checking validity of important settings
     SanitizedConf["General"]["AppID"] = AppIDChecker(SanitizedConf["General"]["AppID"])
@@ -396,7 +412,7 @@ def ConfigHandler(LocalPath: str):
             "Presence": {
                 "ResetTimeOnAppChange": Config["Presence"]["ResetTimeOnAppChange"],
                 "Format": deepcopy(Config["Presence"]["CommonFormat"]) if Config["Presence"]["UseCommonFormat"] \
-                            else deepcopy(Config["Presence"][f"{Client}Format"])
+                          else deepcopy(Config["Presence"][f"{Client}Format"])
             }
         }; ClientConf.update(Config["ClientConfig"][Client].items())
 
@@ -415,13 +431,51 @@ path = "/".join(path)
 ConfigHandler(path)
 
 from ConsoleClient import (Clients, ActiveClients)
+from pypresence import types, presence
 import time
+
+RichPresence = presence.Presence(Config["General"]["AppID"])
+Connected = False
 
 while True:
     for Client in Clients:
         Client.pingConsole()
 
-    for Active in ActiveClients:
-        print(Active.ClientData)
+    if ActiveClients:
+        if not Connected:
+            try:
+                RichPresence.connect()
+                Connected = True
+            except:
+                print("Connexion Error")
+
+        if Connected:
+            RPCData = ActiveClients[-1].getRPCData()
+
+            DisplayType = None
+
+            match RPCData.get("DisplayType"):
+                case 1:
+                    DisplayType = types.StatusDisplayType.NAME
+                case 2:
+                    DisplayType = types.StatusDisplayType.DETAILS
+                case 3:
+                    DisplayType = types.StatusDisplayType.STATE
+
+            RichPresence.update(
+                start=RPCData.get("StatTime"),
+                status_display_type=DisplayType,
+                name=RPCData.get("Name"),
+                details=RPCData.get("Details"),
+                state=RPCData.get("State"),
+                large_image=RPCData.get("LargeImage"),
+                large_text=RPCData.get("LargeText"),
+                small_image=RPCData.get("SmallImage"),
+                small_text=RPCData.get("SmallText")
+            )
+
+    elif Connected:
+        RichPresence.close()
+        Connected = False
 
     time.sleep(Config["General"]["PollInterval"])
