@@ -1,5 +1,5 @@
 from .ConnectionHelper import WiiUConnector, ToEpoch
-from ConsoleClient import ConsoleClient, ActiveClients
+from ConsoleClient import ConsoleClient, ActiveClients, RPCFormat
 from datetime import datetime, timezone
 from copy import deepcopy
 
@@ -46,4 +46,4 @@ class WiiUClient(ConsoleClient):
                                       "pretendo" if self.ClientData["ConsoleData"].get("Network") == "pn" else "unknown"
         }
 
-        return {}
+        return RPCFormat(TextRules, ImageRules, self.Config["Presence"].get("Format"), self.ClientData["AppStartTime"])
