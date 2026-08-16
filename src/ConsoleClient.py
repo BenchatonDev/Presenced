@@ -17,6 +17,8 @@ class ConsoleClient:
 
         Clients.append(self)
 
+        return
+
     def __del__(self):
         """ This Function is very unlikely to be called with the design I have in mind but it's there in 
         the event that I ever need it in the future. I need to fill the remaining space so it's aligned :) """
