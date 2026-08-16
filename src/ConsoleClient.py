@@ -6,8 +6,8 @@ ActiveClients = []
 class ConsoleClient:
 
     def __init__(self, Config: dict):
-        """ This Function just set the IP address to be used for console communications, likely from a
-        config handler or smt like that which has yet to be implemented, just like 99% of this class """
+        """ This Function just set the config used by the console client, likely from a config handler or smt
+        like that which has yet to be implemented, just like 99% of this class (Actually it's all here now)"""
         self.Config = Config
         self.ClientData = {
             "ConsoleData": {},
