@@ -450,7 +450,7 @@ while True:
                 print("Connexion Error")
 
         if Connected:
-            RPCData = ActiveClients[-1].getRPCData()
+            RPCData = ActiveClients[0].getRPCData()
 
             DisplayType = None
 
