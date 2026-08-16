@@ -41,7 +41,7 @@ class WiiUClient(ConsoleClient):
         }
 
         ImageRules = {
-            "image_app": lambda : getIcon(self.ClientData["ConsoleData"].get("src/WiiU/ConnectionHelper.py")),
+            "image_app": lambda : getIcon(self.ClientData["ConsoleData"].get("LongTitleName")),
             "image_console": lambda : "wiiu", # Change that to a URL or asset name if you ever change the AppID
             "image_network": lambda : "nintendo" if self.ClientData["ConsoleData"].get("Network") == "nn" else \
                                       "pretendo" if self.ClientData["ConsoleData"].get("Network") == "pn" else "unknown"
