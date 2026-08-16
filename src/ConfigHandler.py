@@ -64,8 +64,6 @@ DEFAULT_CONFIG = {
 # More Constants ??? Oh my, Oh my !
 VALID_CLIENTS = ["PS3", "WiiU"]
 
-Config = {}
-
 # TM for TradeMark, Have fun naming your most private of functions with silly names too~
 def SanitizerTM(Config: dict):
     from typing import Any
@@ -370,9 +368,10 @@ def ConfigLoader(ConfigPath: str):
     DirtyConfig = {}
     
     try:
-        ConfigFile = open(f"{ConfigPath}/config.json", "r", encoding="utf-8")
+        ConfigFile = open(ConfigPath, "r", encoding="utf-8") if ConfigPath.lower().endswith(".json") \
+                     else open(f"{ConfigPath}/config.json", "r", encoding="utf-8")
     except FileNotFoundError:
-        print("Config File not found, File will be created")
+        print("The config file is not readable or doesn't exist, the default config will be applied")
 
     if ConfigFile:
         try:
@@ -380,14 +379,19 @@ def ConfigLoader(ConfigPath: str):
             ConfigFile.close()
         except json.JSONDecodeError:
             ConfigFile.close()
-            print("Invalid Config File, failed to parse json, new File will be created")
+            print("The config file isn't valid JSON (failed to parse), the default config will be applied")
     else:
         DirtyConfig = {}
 
     return SanitizerTM(DirtyConfig)
 
 def ConfigSaver(ConfigPath: str, Config: dict):
-    ConfigFile = open(f"{ConfigPath}/config.json", "w", encoding="utf-8")
+    try:
+        ConfigFile = open(ConfigPath, "w", encoding="utf-8") if ConfigPath.lower().endswith(".json") \
+                    else open(f"{ConfigPath}/config.json", "w", encoding="utf-8")
+    except:
+        print("An error occured while writing the config file to disk, changes wont be saved")
+        return
 
     json.dump(Config, ConfigFile, indent=4)
     ConfigFile.close()
@@ -395,7 +399,6 @@ def ConfigSaver(ConfigPath: str, Config: dict):
     return
 
 def ConfigHandler(LocalPath: str):
-    global Config
 
     ClientConstructors = {
         "PS3": PS3Client,
@@ -420,62 +423,4 @@ def ConfigHandler(LocalPath: str):
 
     ConfigSaver(LocalPath, Config)
 
-    return
-
-## Over complicated path thingy for testing
-import os
-path = os.path.abspath(__file__).split("/")
-path.pop(len(path) - 1); path.pop(len(path) - 1)
-path = "/".join(path)
-
-ConfigHandler(path)
-
-from ConsoleClient import (Clients, ActiveClients)
-from pypresence import types, presence
-import time
-
-RichPresence = presence.Presence(Config["General"]["AppID"])
-Connected = False
-
-while True:
-    for Client in Clients:
-        Client.pingConsole()
-
-    if ActiveClients:
-        if not Connected:
-            try:
-                RichPresence.connect()
-                Connected = True
-            except:
-                print("Connexion Error")
-
-        if Connected:
-            RPCData = ActiveClients[0].getRPCData()
-
-            DisplayType = None
-
-            match RPCData.get("DisplayType"):
-                case 1:
-                    DisplayType = types.StatusDisplayType.NAME
-                case 2:
-                    DisplayType = types.StatusDisplayType.DETAILS
-                case 3:
-                    DisplayType = types.StatusDisplayType.STATE
-
-            RichPresence.update(
-                start=RPCData.get("StatTime"),
-                status_display_type=DisplayType,
-                name=RPCData.get("Name"),
-                details=RPCData.get("Details"),
-                state=RPCData.get("State"),
-                large_image=RPCData.get("LargeImage"),
-                large_text=RPCData.get("LargeText"),
-                small_image=RPCData.get("SmallImage"),
-                small_text=RPCData.get("SmallText")
-            )
-
-    elif Connected:
-        RichPresence.close()
-        Connected = False
-
-    time.sleep(Config["General"]["PollInterval"])
+    return Config
