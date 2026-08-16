@@ -31,8 +31,8 @@ def WiiUConnector(WiiUPort: int, Retries: int = 5, Delay: int = 0) -> dict:
                         # And my naming scheme better :))
                         FormatedData = {
                             "LongTitleName": WiiUData.get("long"),
-                            "ShortTitleName": WiiUData.get("name"),
-                            "NetworkID": WiiUData.get("nnid") if WiiUData.get("img") else "{anon-user}",
+                            "ShortTitleName": WiiUData.get("app"),
+                            "NetworkID": WiiUData.get("nnid") if WiiUData.get("nnid") else "{anon-user}",
                             "Network": WiiUData.get("img") if WiiUData.get("img") else "uk",
                             "Time": (WiiUData.get("time"), WiiUData.get("dst")),
                         }
