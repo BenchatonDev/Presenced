@@ -1,4 +1,5 @@
 # Most of this code is from https://github.com/FlamingNineteen/RichPresenceWUPS/blob/main/discord-script.py
+from PresencedIcons import getIcon
 from requests import get
 from json import loads
 
@@ -19,9 +20,9 @@ def PullRepo():
 
     return
 
-def getIcon(LongTitleName: str):
+def getAppIcon(LongTitleName: str):
     PullRepo()
 
     # This is really just for one liner glory, absolutely useless change compared to the last version's code
     return f"https://raw.githubusercontent.com/{IconDBRepo}/main/icons/{IconDB.get(LongTitleName)}" \
-           if LongTitleName in IconDB else "unknown"
+           if LongTitleName in IconDB else getIcon("Unknown")

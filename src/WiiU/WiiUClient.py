@@ -1,7 +1,8 @@
-from .ConnectionHelper import WiiUConnector, ToEpoch
 from ConsoleClient import ConsoleClient, ActiveClients, RPCFormat
+from .ConnectionHelper import WiiUConnector, ToEpoch
 from datetime import datetime, timezone
-from .AppIcon import getIcon
+from PresencedIcons import getIcon
+from .AppIcon import getAppIcon
 from copy import deepcopy
 
 class WiiUClient(ConsoleClient):
@@ -41,10 +42,10 @@ class WiiUClient(ConsoleClient):
         }
 
         ImageRules = {
-            "image_app": lambda : getIcon(self.ClientData["ConsoleData"].get("LongTitleName")),
-            "image_console": lambda : "wiiu", # Change that to a URL or asset name if you ever change the AppID
-            "image_network": lambda : "nintendo" if self.ClientData["ConsoleData"].get("Network") == "nn" else \
-                                      "pretendo" if self.ClientData["ConsoleData"].get("Network") == "pn" else "unknown"
+            "image_app": lambda : getAppIcon(self.ClientData["ConsoleData"].get("LongTitleName")),
+            "image_console": lambda : getIcon("WiiU"), # Change that to a URL or asset name if you ever change the AppID
+            "image_network": lambda : getIcon("NintendoN") if self.ClientData["ConsoleData"].get("Network") == "nn" else \
+                                      getIcon("PretendoN") if self.ClientData["ConsoleData"].get("Network") == "pn" else getIcon("Unknown")
         }
 
         return RPCFormat(TextRules, ImageRules, self.Config["Presence"].get("Format"), self.ClientData["AppStartTime"])

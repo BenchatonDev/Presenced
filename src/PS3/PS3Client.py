@@ -1,5 +1,6 @@
-from .SmanParser import SmanHTMLParser
 from ConsoleClient import ConsoleClient, ActiveClients, RPCFormat
+from .SmanParser import SmanHTMLParser
+from PresencedIcons import getIcon
 from datetime import datetime, timezone
 from icmplib import ping
 from copy import deepcopy
@@ -58,9 +59,9 @@ class PS3Client(ConsoleClient):
         }
 
         ImageRules = {
-            "image_app": lambda : "unknown", # URL resolved by an helper function I have yet to implement
-            "image_console": lambda : "ps3", # Change that to a URL or asset name if you ever change the AppID
-            "image_network": lambda : "playstation" if self.Config.get("NetworkName") == "PSN" else "unknown"
+            "image_app": lambda : getIcon("Unknown"), # URL resolved by an helper function I have yet to implement
+            "image_console": lambda : getIcon("PS3"), # Change that to a URL or asset name if you ever change the AppID
+            "image_network": lambda : getIcon("PlayStationN") if self.Config.get("NetworkName") == "PSN" else getIcon("Unknown")
         }
 
         return RPCFormat(TextRules, ImageRules, self.Config["Presence"].get("Format"), self.ClientData["AppStartTime"])
