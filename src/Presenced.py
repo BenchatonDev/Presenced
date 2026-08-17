@@ -55,8 +55,6 @@ def MainFunction():
 
         sleep(Config["General"].get("PollInterval"))
 
-        
-
 # This try is litterally just here for aesthetic reasons lol
 # No really, I just HATE the error spam when you press CTRL+C
 # To exit the script + doesn't feel "Production Ready" when it
