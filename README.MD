@@ -74,7 +74,7 @@ The way the config file is structured and what values you can put in each field 
 
 # Game Icon databases
 
-- WiiU, feel free to comtribute to the Game icon database over at [Flaming's repo](https://github.com/FlamingNineteen/RichPresenceWUPS-DB)
+- [`WiiU`](https://github.com/FlamingNineteen/RichPresenceWUPS-DB): Feel free to comtribute to the Game icon database over at [Flaming's repo](https://github.com/FlamingNineteen/RichPresenceWUPS-DB)
 
 # Acknowledgements
 - [Zorua98741](https://github.com/zorua98741) Inspiration for this project, and WebManMOD's `CPURSX.PS3` scraping idea
