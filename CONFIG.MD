@@ -4,7 +4,7 @@ The configuration for Presenced is represented as a dictionary which allows it t
 
 ## General
 
-- **AppID** *[STR]* : A Discord app ID created from the [Discord Developer Portal](https://discord.com/developers/applications/)
+- **AppID** *[STR]* : A Discord app ID created from the [Discord Developer Portal](https://discord.com/developers/applications/), changing it isn't recommended since Presenced internally relies on some assets published on the default AppID, the option is there and accessible if you know what you are getting into
 - **DiscordPyToken** *[STR]* : A Discord user token, used to log into the account if the `Discord.py` backend is used (Not the default)
 - **PollInterval** *[INT]* : The time in seconds between console pings; manages how fast Presenced checks consoles for activity and updates related data (Current game, etc.)
 - **ConsoleClients** *[STR]* | *[LIST]*: Which of the supported ConsoleClients to use (i.e., which consoles you want to use with Presenced).
