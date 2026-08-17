@@ -2,7 +2,7 @@
 # But like, I felt the name Main.py didn't fit in with the rest of my file names so that's that :)
 from argparse import ArgumentParser
 from pathlib import Path; import sys
-from time import sleep
+from time import sleep, monotonic
 
 from ConfigHandler import ConfigHandler
 from ConsoleClient import Clients, ActiveClients
@@ -44,8 +44,10 @@ def MainFunction():
         return
 
     while True:
+        PollTime = monotonic()
         for Client in Clients:
             Client.pingConsole() # This is subpar, I need to learn how to make those async so they don't wait on each other
+        PollDeltaTime = monotonic() - PollTime
 
         if ActiveClients:
             Backend.UpdatePresence(ActiveClients[0].getRPCData())
@@ -53,7 +55,8 @@ def MainFunction():
         else:
             Backend.Disconnect()
 
-        sleep(Config["General"].get("PollInterval"))
+        print(PollDeltaTime, Config["General"].get("PollInterval") - PollDeltaTime if PollDeltaTime < Config["General"].get("PollInterval") else 0)
+        sleep(Config["General"].get("PollInterval") - PollDeltaTime if PollDeltaTime < Config["General"].get("PollInterval") else 0)
 
 # This try is litterally just here for aesthetic reasons lol
 # No really, I just HATE the error spam when you press CTRL+C
