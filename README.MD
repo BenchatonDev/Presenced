@@ -7,7 +7,7 @@
     A configurable Rich Presence for homebrewed consoles
 </h1>
 
-Presenced is an hopefully flexible and customizable Discord Rich Presence app for homebrewed consoles writen in python. Originally created to run on an headless computer as self-bot, it's not a self-bot by default since such things are against the Discord TOS and use as your own risk even if the risk of your account being banned is low it's not 0, which means you needd, by default, to have a Discord client opened alongside Presenced to use it.
+Presenced is an hopefully flexible and customizable Discord Rich Presence app for homebrewed consoles writen in python. Originally created to run on an headless computer as self-bot, it's not a self-bot by default since such things are against the Discord TOS and use at your own risk even if the risk of your account being banned is low it's not 0, which means you needd, by default, to have a Discord client opened alongside Presenced to use it.
 
 # TODO:
 - Make the `pingConsole()` function for all clients run in parallel
