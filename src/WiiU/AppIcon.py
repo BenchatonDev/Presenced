@@ -2,7 +2,7 @@
 from requests import get
 from json import loads
 
-IconDBRepo = "BenchatonDev/RichPresenceWUPS-DB"
+IconDBRepo = "FlamingNineteen/RichPresenceWUPS-DB"
 IconDB = {}
 
 def PullRepo():
