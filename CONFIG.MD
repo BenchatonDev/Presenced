@@ -1,6 +1,6 @@
 # Config File Documentation
 
-The configuration for Presenced is represented as a dictionary which allows it to easily be read or saved to a JSON file. The configuration has two main parts: the "General" part, which stores settings that affect the whole program, and the "Presence" part, which stores settings in relation to how the Rich Presence will look on your Discord profile. Additionally, if a field present in `{Presence}Format` cannot poll its data from the `ConsoleClient`, it will use strings set in a dictionary inside `ClientConfig` under the corresponding `ConsoleClient`'s name.
+The configuration for Presenced is represented as a dictionary which allows it to easily be read or saved to a JSON file. The configuration has two main parts: the "General" part, which stores settings that affect the whole program, and the "Presence" part, which stores settings in relation to how the Rich Presence will look on your Discord profile. Additionally, if a field present in `{Presence}Format` cannot poll its data from the `ConsoleClient`, it will use strings set in a dictionary inside `ClientConfig` under the corresponding `ConsoleClient`'s name. Everything is case sensitive in the config so be careful.
 
 ## General
 
@@ -12,7 +12,7 @@ The configuration for Presenced is represented as a dictionary which allows it t
     <summary>Click to see field options</summary>
 
     - *all* (***Default***) **➤** Use all supported ConsoleClients
-    - *[]* **➤** List of client names; supported list members are `"PS3"`
+    - *[]* **➤** List of client names; supported list members are `"PS3"` and `"WiiU"`
 
   </details>
 - **PyPresenceBackend** *[BOOL]* : Whether or not to use `pyPresence` as the Rich Presence backend (`True` by default)
