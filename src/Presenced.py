@@ -8,6 +8,7 @@ from ConfigHandler import ConfigHandler
 from ConsoleClient import Clients, ActiveClients
 from RichPresenceBackend import RichPresenceBackend
 from PyPresenceBackend import PyPresenceBackend
+from DiscordPyBackend import DiscordPyBackend
 
 # Man, naming a function "Main" with a capital "M" feels wrong but not doing it isn't
 # Fitting for my a capitalisation aesthetic :sob: <- Imagine the emoji here please
@@ -40,8 +41,10 @@ def MainFunction():
     if Config["General"].get("PyPresenceBackend"):
         Backend = PyPresenceBackend(Config["General"])
     else:
-        print("To Be Implemented, sorry :/")
+        print("The Discordpy backend needs work, you can enable it by uncomenting" \
+              + "line 46 in Presenced.py, very much not finalized, don't use")
         return
+        # Backend = DiscordPyBackend(Config["General"])
 
     while True:
         PollTime = monotonic()
@@ -55,7 +58,6 @@ def MainFunction():
         else:
             Backend.Disconnect()
 
-        print(PollDeltaTime, Config["General"].get("PollInterval") - PollDeltaTime if PollDeltaTime < Config["General"].get("PollInterval") else 0)
         sleep(Config["General"].get("PollInterval") - PollDeltaTime if PollDeltaTime < Config["General"].get("PollInterval") else 0)
 
 # This try is litterally just here for aesthetic reasons lol
