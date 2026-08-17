@@ -64,7 +64,7 @@ def RPCFormat(TextRules: dict, ImageRules: dict, Format: dict, Time: int):
     ImageSmallType = Format.get("ImageSmallType") if Format.get("ImageSmallType") else None
 
     RPCData = {
-        "StatTime": Time,
+        "StartTime": Time,
         "DisplayType": Format.get("DisplayType"),
         "Name": AppName if AppName not in ValidNameRules else TextRules[AppName](),
         "Details": Details1 if Details1 not in TextRules else TextRules[Details1](),

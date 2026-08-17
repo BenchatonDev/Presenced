@@ -30,9 +30,10 @@ class PyPresenceBackend(RichPresenceBackend):
         # To live in it's own subclass so I could handle other Backends
         # With ease, the implementation it self wasn't bad (imo, idk abt u)
 
-        if self.Connected:
+        if not self.Connected: self.Disconnect()
 
-            DisplayType = None
+        if self.Connected:
+            DisplayType : StatusDisplayType = StatusDisplayType.NAME
 
             match RPCData.get("DisplayType"):
                 case 1:
@@ -44,7 +45,7 @@ class PyPresenceBackend(RichPresenceBackend):
 
             try:
                 self.Connection.update(
-                    start=RPCData.get("StatTime"),
+                    start=RPCData.get("StartTime"),
                     status_display_type=DisplayType,
                     name=RPCData.get("Name"),
                     details=RPCData.get("Details"),
@@ -57,8 +58,6 @@ class PyPresenceBackend(RichPresenceBackend):
 
             except:
                 self.Disconnect()
-
-        else: self._Connect()
 
         return
 
