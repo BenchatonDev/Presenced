@@ -22,8 +22,6 @@ def PullRepo():
 def getIcon(LongTitleName: str):
     PullRepo()
 
-    if LongTitleName in IconDB:
-        return f"https://raw.githubusercontent.com/{IconDBRepo}/main/icons/{IconDB.get(LongTitleName)}"
-
-    else:
-        return "unknown"
+    # This is really just for one liner glory, absolutely useless change compared to the last version's code
+    return f"https://raw.githubusercontent.com/{IconDBRepo}/main/icons/{IconDB.get(LongTitleName)}" \
+           if LongTitleName in IconDB else "unknown"
