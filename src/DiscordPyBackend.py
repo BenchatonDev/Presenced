@@ -2,7 +2,7 @@ from RichPresenceBackend import RichPresenceBackend
 from discord import Client, Activity, ActivityType, \
                     ActivityAssets, StatusDisplayType, \
                     ActivityTimestamps, ApplicationAsset
-from asyncio import run; from threading import Thread
+from asyncio import run, create_task; from threading import Thread
 from datetime import datetime, timezone
 
 class DiscordPyBackend(RichPresenceBackend):
@@ -58,13 +58,13 @@ class DiscordPyBackend(RichPresenceBackend):
                 state=RPCData.get("State"),
                 assets=ActivityAssets( # Documentation wants to proxy external assets but I don't
                     large_image=RPCData.get("LargeImage"), # Know how to cleanly handle that with internal assets
-                    large_text=RPCData.get("State"), # I need to read further.
+                    large_text=RPCData.get("LargeText"), # I need to read further.
                     small_image=RPCData.get("SmallImage"),
                     small_text=RPCData.get("SmallText"),
                 )
             )
 
-            run(self.Connection.change_presence(activity=PresencedRPC))
+            self.Connection.loop.call_soon_threadsafe(create_task, self.Connection.change_presence(activity=PresencedRPC))
 
         return
 
@@ -77,8 +77,8 @@ class DiscordPyBackend(RichPresenceBackend):
         # Might also just be the most useless comment inside
         # This project, at the time of writing at least >;(
 
-        if self.Connected:
-            run(self.Connection.close())
+        if self.Connected and not self.Connection.is_closed():
+            self.Connection.loop.call_soon_threadsafe(create_task, self.Connection.close())
             self.Connected = False
-        
+
         return
