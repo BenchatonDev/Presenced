@@ -90,8 +90,9 @@ class DiscordPyBackend(RichPresenceBackend):
         # Might also just be the most useless comment inside
         # This project, at the time of writing at least >;(
 
+        from asyncio import create_task
         if self.Connected and not self.Connection.is_closed():
-            run_coroutine_threadsafe(self.Connection.close(), self.Connection.loop)
+            self.Connection.loop.call_soon_threadsafe(create_task, self.Connection.close())
             self.Connected = False
 
         return
