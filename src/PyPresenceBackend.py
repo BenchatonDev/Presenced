@@ -30,7 +30,7 @@ class PyPresenceBackend(RichPresenceBackend):
         # To live in it's own subclass so I could handle other Backends
         # With ease, the implementation it self wasn't bad (imo, idk abt u)
 
-        if not self.Connected: self.Disconnect()
+        if not self.Connected: self._Connect()
 
         if self.Connected:
             DisplayType : StatusDisplayType = StatusDisplayType.NAME
