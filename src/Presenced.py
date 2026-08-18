@@ -42,34 +42,28 @@ def MainFunction():
     if Config["General"].get("PyPresenceBackend"):
         Backend = PyPresenceBackend(Config["General"])
     else:
-        print("The Discordpy backend needs work, you can enable it by uncomenting" \
-              + "line 46 in Presenced.py, very much not finalized, don't use")
-        return
-        # Backend = DiscordPyBackend(Config["General"])
+        Backend = DiscordPyBackend(Config["General"])
 
-    while True:
-        PollTime = monotonic()
-        with ThreadPoolExecutor() as Executor:
-            for Client in Clients:
-                Executor.submit(Client.pingConsole)
-        PollDeltaTime = monotonic() - PollTime
+    try:
+        while True:
+            PollTime = monotonic()
+            with ThreadPoolExecutor() as Executor:
+                for Client in Clients:
+                    Executor.submit(Client.pingConsole)
+            PollDeltaTime = monotonic() - PollTime
 
-        if ActiveClients:
-            Backend.UpdatePresence(ActiveClients[0].getRPCData())
+            if ActiveClients:
+                Backend.UpdatePresence(ActiveClients[0].getRPCData())
 
-        else:
-            Backend.Disconnect()
+            else:
+                Backend.Disconnect()
 
-        sleep(Config["General"].get("PollInterval") - PollDeltaTime if PollDeltaTime < Config["General"].get("PollInterval") else 0)
+            sleep(Config["General"].get("PollInterval") - PollDeltaTime if PollDeltaTime < Config["General"].get("PollInterval") else 0)
 
-# This try is litterally just here for aesthetic reasons lol
-# No really, I just HATE the error spam when you press CTRL+C
-# To exit the script + doesn't feel "Production Ready" when it
-# Just spews useless error messages (Also I really don't like saying
-# "Production Ready", feels too profesional / corpo speak Eeeeeeew)
-try:
-    MainFunction()
+    except KeyboardInterrupt:
+        print("\nPresenced will exit soon, Have a nice day !")
 
-except KeyboardInterrupt:
+    Backend.Disconnect()
+    return
 
-    print("\nPresenced will exit, Have a nice day !")
+MainFunction()

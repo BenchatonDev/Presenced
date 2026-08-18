@@ -2,7 +2,7 @@ from RichPresenceBackend import RichPresenceBackend
 from discord import Client, Activity, ActivityType, \
                     ActivityAssets, StatusDisplayType, \
                     ActivityTimestamps, ApplicationAsset
-from asyncio import run, create_task; from threading import Thread
+from asyncio import run_coroutine_threadsafe; from threading import Thread
 from datetime import datetime, timezone
 
 class DiscordPyBackend(RichPresenceBackend):
@@ -10,6 +10,7 @@ class DiscordPyBackend(RichPresenceBackend):
     def __init__(self, Config: dict):
         super().__init__(Config)
         self.Connection = Client()
+        self.AppAssets = {}
 
         @self.Connection.event
         async def on_ready():
@@ -34,6 +35,12 @@ class DiscordPyBackend(RichPresenceBackend):
         if not self.Connected: self._Connect()
 
         if self.Connected:
+            if not self.AppAssets:
+                TmpAppAssets = run_coroutine_threadsafe(self.Connection.http.get_app_assets(int(self.Config["AppID"])), \
+                                                        self.Connection.loop).result()
+                for Asset in TmpAppAssets:
+                    if Asset.get("type") == 1:
+                        self.AppAssets.setdefault(Asset.get("name"), Asset.get("id"))
 
             DisplayType : StatusDisplayType = StatusDisplayType.name # type: ignore
 
@@ -45,6 +52,12 @@ class DiscordPyBackend(RichPresenceBackend):
                 case 3:
                     DisplayType = StatusDisplayType.state
 
+            LargeImage = self.AppAssets.get(RPCData.get("LargeImage")) \
+                         if RPCData.get("LargeImage") in self.AppAssets else RPCData.get("LargeImage")
+
+            SmallImage = self.AppAssets.get(RPCData.get("SmallImage")) \
+                         if RPCData.get("SmallImage") in self.AppAssets else RPCData.get("SmallImage")
+    
             PresencedRPC = Activity(
                 # Setup Stuff
                 type=ActivityType.playing,
@@ -56,15 +69,15 @@ class DiscordPyBackend(RichPresenceBackend):
                 name=RPCData.get("Name"), # type: ignore
                 details=RPCData.get("Details"),
                 state=RPCData.get("State"),
-                assets=ActivityAssets( # Documentation wants to proxy external assets but I don't
-                    large_image=RPCData.get("LargeImage"), # Know how to cleanly handle that with internal assets
-                    large_text=RPCData.get("LargeText"), # I need to read further.
-                    small_image=RPCData.get("SmallImage"),
+                assets=ActivityAssets(
+                    large_image=LargeImage,
+                    large_text=RPCData.get("LargeText"),
+                    small_image=SmallImage,
                     small_text=RPCData.get("SmallText"),
                 )
             )
 
-            self.Connection.loop.call_soon_threadsafe(create_task, self.Connection.change_presence(activity=PresencedRPC))
+            run_coroutine_threadsafe(self.Connection.change_presence(activity=PresencedRPC), self.Connection.loop)
 
         return
 
@@ -78,7 +91,7 @@ class DiscordPyBackend(RichPresenceBackend):
         # This project, at the time of writing at least >;(
 
         if self.Connected and not self.Connection.is_closed():
-            self.Connection.loop.call_soon_threadsafe(create_task, self.Connection.close())
+            run_coroutine_threadsafe(self.Connection.close(), self.Connection.loop)
             self.Connected = False
 
         return
