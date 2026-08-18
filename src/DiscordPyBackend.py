@@ -2,8 +2,9 @@ from RichPresenceBackend import RichPresenceBackend
 from discord import Client, Activity, ActivityType, \
                     ActivityAssets, StatusDisplayType, \
                     ActivityTimestamps, ApplicationAsset
-from asyncio import run_coroutine_threadsafe; from threading import Thread
+from asyncio import run_coroutine_threadsafe, create_task
 from datetime import datetime, timezone
+from threading import Thread
 
 class DiscordPyBackend(RichPresenceBackend):
 
@@ -11,6 +12,7 @@ class DiscordPyBackend(RichPresenceBackend):
         super().__init__(Config)
         self.Connection = Client()
         self.AppAssets = {}
+        self._connecting = False
 
         @self.Connection.event
         async def on_ready():
@@ -20,7 +22,7 @@ class DiscordPyBackend(RichPresenceBackend):
         return
 
     def _Connect(self):
-        if self.Connected and not self._connecting: return
+        if self.Connected or self._connecting: return
 
         try:
             self._connecting = True
@@ -53,11 +55,17 @@ class DiscordPyBackend(RichPresenceBackend):
                     DisplayType = StatusDisplayType.state
 
             LargeImage = self.AppAssets.get(RPCData.get("LargeImage")) \
-                         if RPCData.get("LargeImage") in self.AppAssets else RPCData.get("LargeImage")
+                         if RPCData.get("LargeImage") in self.AppAssets \
+                         else run_coroutine_threadsafe(self.Connection.proxy_external_application_assets(int(self.Config["AppID"]), \
+                                                       RPCData.get("LargeImage")), self.Connection.loop).result()[0] \
+                         if RPCData.get("LargeImage") else None
 
             SmallImage = self.AppAssets.get(RPCData.get("SmallImage")) \
-                         if RPCData.get("SmallImage") in self.AppAssets else RPCData.get("SmallImage")
-    
+                         if RPCData.get("SmallImage") in self.AppAssets \
+                         else run_coroutine_threadsafe(self.Connection.proxy_external_application_assets(int(self.Config["AppID"]), \
+                                                       RPCData.get("SmallImage")), self.Connection.loop).result()[0] \
+                         if RPCData.get("SmallImage") else None
+            
             PresencedRPC = Activity(
                 # Setup Stuff
                 type=ActivityType.playing,
@@ -90,7 +98,6 @@ class DiscordPyBackend(RichPresenceBackend):
         # Might also just be the most useless comment inside
         # This project, at the time of writing at least >;(
 
-        from asyncio import create_task
         if self.Connected and not self.Connection.is_closed():
             self.Connection.loop.call_soon_threadsafe(create_task, self.Connection.close())
             self.Connected = False
