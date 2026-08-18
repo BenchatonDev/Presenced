@@ -1,4 +1,4 @@
-from ConsoleClient import ConsoleClient, ActiveClients, RPCFormat
+from ConsoleClient import ActiveClients, ConsoleClientLock, ConsoleClient, RPCFormat
 from .SmanParser import SmanHTMLParser
 from PresencedIcons import getIcon
 from datetime import datetime, timezone
@@ -17,14 +17,16 @@ class PS3Client(ConsoleClient):
                 get(f"http://{self.Config["PS3Address"]}", headers=RequestHeaders, timeout=1)
 
             except:
-                if self in ActiveClients: ActiveClients.remove(self); \
-                    self.ClientData["ConsoleData"], self.ClientData["OldConsoleData"] = {}, {}
+                with ConsoleClientLock:
+                    if self in ActiveClients: ActiveClients.remove(self); \
+                       self.ClientData["ConsoleData"], self.ClientData["OldConsoleData"] = {}, {}
 
                 return
             
             else:
-                if self not in ActiveClients: ActiveClients.insert(0, self); \
-                    self.ClientData["AppStartTime"] = int(datetime.now(timezone.utc).timestamp())
+                with ConsoleClientLock:
+                    if self not in ActiveClients: ActiveClients.insert(0, self); \
+                       self.ClientData["AppStartTime"] = int(datetime.now(timezone.utc).timestamp())
 
                 SmanHTML = get(f"http://{self.Config["PS3Address"]}/cpursx.ps3?/sman.ps3", headers=RequestHeaders).text
 
@@ -36,15 +38,17 @@ class PS3Client(ConsoleClient):
                     self.ClientData["AppStartTime"] = int(datetime.now(timezone.utc).timestamp())
 
         else:
-            if self in ActiveClients: ActiveClients.remove(self); \
-                self.ClientData["ConsoleData"], self.ClientData["OldConsoleData"] = {}, {}
+            with ConsoleClientLock:
+                if self in ActiveClients: ActiveClients.remove(self); \
+                   self.ClientData["ConsoleData"], self.ClientData["OldConsoleData"] = {}, {}
 
             return
 
         return
 
     def getRPCData(self):
-        if self not in ActiveClients: return {}
+        with ConsoleClientLock:
+            if self not in ActiveClients: return {}
 
         TemperatureUnit = "C" if self.Config.get("UseCelsius") else "F"
 

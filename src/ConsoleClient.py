@@ -1,7 +1,12 @@
 # Skeleton to be implemented for any console I want to support
+from threading import Lock
 
 Clients = []
 ActiveClients = []
+# Should provent race conditions on the two shared variables above 
+# If I understood the documentation page right, It needs to be 
+# Imported alongside the vars tho, but that shouldn't be a problem
+ConsoleClientLock = Lock()
 
 class ConsoleClient:
 
@@ -15,7 +20,7 @@ class ConsoleClient:
             "AppStartTime": 0
         }
 
-        Clients.append(self)
+        with ConsoleClientLock: Clients.append(self)
 
         return
 
@@ -23,7 +28,7 @@ class ConsoleClient:
         """ This Function is very unlikely to be called with the design I have in mind but it's there in 
         the event that I ever need it in the future. I need to fill the remaining space so it's aligned :) """
 
-        Clients.remove(self)
+        with ConsoleClientLock: Clients.remove(self)
 
         if self in ActiveClients:
             ActiveClients.remove(self)

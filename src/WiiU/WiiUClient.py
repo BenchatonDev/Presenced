@@ -1,4 +1,4 @@
-from ConsoleClient import ConsoleClient, ActiveClients, RPCFormat
+from ConsoleClient import ActiveClients, ConsoleClientLock, ConsoleClient, RPCFormat
 from .ConnectionHelper import WiiUConnector, ToEpoch
 from datetime import datetime, timezone
 from PresencedIcons import getIcon
@@ -11,8 +11,9 @@ class WiiUClient(ConsoleClient):
         WiiUData = WiiUConnector(self.Config["UDPPort"])
         
         if WiiUData:
-            if self not in ActiveClients: ActiveClients.insert(0, self); \
-                self.ClientData["AppStartTime"] = int(datetime.now(timezone.utc).timestamp())
+            with ConsoleClientLock:
+                if self not in ActiveClients: ActiveClients.insert(0, self); \
+                   self.ClientData["AppStartTime"] = int(datetime.now(timezone.utc).timestamp())
 
             if self.Config["Presence"]["ResetTimeOnAppChange"]:
                 self.ClientData["AppStartTime"] = ToEpoch(WiiUData["Time"])
@@ -22,13 +23,15 @@ class WiiUClient(ConsoleClient):
             self.ClientData["ConsoleData"] = deepcopy(WiiUData)
 
         else:
-            if self in ActiveClients: ActiveClients.remove(self); \
-                self.ClientData["ConsoleData"], self.ClientData["OldConsoleData"] = {}, {}
+            with ConsoleClientLock:
+                if self in ActiveClients: ActiveClients.remove(self); \
+                   self.ClientData["ConsoleData"], self.ClientData["OldConsoleData"] = {}, {}
 
         return
 
     def getRPCData(self):
-        if self not in ActiveClients: return {}
+        with ConsoleClientLock:
+            if self not in ActiveClients: return {}
 
         TextRules = {
             "console_name":  lambda : "Wii U",
