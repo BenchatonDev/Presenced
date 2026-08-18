@@ -3,6 +3,7 @@
 from argparse import ArgumentParser
 from pathlib import Path; import sys
 from time import sleep, monotonic
+from concurrent.futures import ThreadPoolExecutor
 
 from ConfigHandler import ConfigHandler
 from ConsoleClient import Clients, ActiveClients
@@ -48,8 +49,9 @@ def MainFunction():
 
     while True:
         PollTime = monotonic()
-        for Client in Clients:
-            Client.pingConsole() # This is subpar, I need to learn how to make those async so they don't wait on each other
+        with ThreadPoolExecutor() as Executor:
+            for Client in Clients:
+                Executor.submit(Client.pingConsole)
         PollDeltaTime = monotonic() - PollTime
 
         if ActiveClients:
