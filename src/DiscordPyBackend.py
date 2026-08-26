@@ -33,6 +33,7 @@ class DiscordPyBackend(RichPresenceBackend):
             self._connecting = True
             Thread(target=self.Connection.run, args=(self.Config["DiscordPyToken"],), \
                    kwargs={"log_handler": None}, daemon=True).start()
+
         except:
             self.Connected = False
             self._connecting = False
