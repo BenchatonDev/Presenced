@@ -16,7 +16,8 @@ class PS3Client(ConsoleClient):
             SmanHTML = None
 
             try:
-                SmanHTML = get(f"http://{self.Config["PS3Address"]}", headers=RequestHeaders, timeout=1).text
+                SmanHTML = get(f"http://{self.Config["PS3Address"]}", headers=RequestHeaders, timeout=1)
+                SmanHTML = SmanHTML.text
 
             except:
                 with ConsoleClientLock:
