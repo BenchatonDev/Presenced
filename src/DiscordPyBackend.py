@@ -13,7 +13,7 @@ class DiscordPyBackend(RichPresenceBackend):
         super().__init__(Config)
         self.Connection = Client()
 
-        self._ProxiedAssetCache = []
+        self._ProxiedAssetCache : list[str] = []
         self._Connecting = False
         self._RPCDataCache = {}
         self._AppAssets = {}
@@ -60,6 +60,38 @@ class DiscordPyBackend(RichPresenceBackend):
         return
 
     def _GenerateActivity(self, RPCData: dict):
+        if not self.Connected: return None
+
+        def AssetResolver(Asset: str):
+            ResolvedAsset = None
+
+            SupportedFileTypes = (".png", ".jpg", ".jpeg", ".webp", ".avif", ".gif")
+            UrlPrefixes = ("http://", "https://")
+            
+            if Asset in self._AppAssets:
+                ResolvedAsset = self._AppAssets.get(Asset)
+
+            elif Asset.lower().startswith(UrlPrefixes) and Asset.lower().endswith(SupportedFileTypes):
+                AlreadyProxied = False
+
+                for Index in range(len(self._ProxiedAssetCache)):
+                    if self._ProxiedAssetCache[Index].endswith(Asset.replace("://", "/", 1)): # Kinda holds on hopes and dreams lol
+                        self._ProxiedAssetCache.insert(0, self._ProxiedAssetCache[Index])
+                        self._ProxiedAssetCache.pop(Index + 1)
+                        AlreadyProxied = True
+
+                        break
+                        
+                if not AlreadyProxied:
+                    self._ProxiedAssetCache.insert(0, run_coroutine_threadsafe(self.Connection.proxy_external_application_assets(
+                                                      int(self.Config["AppID"]), Asset), self.Connection.loop).result()[0])
+
+                if len(self._ProxiedAssetCache) > 30: # Very Arbitrary number
+                    self._ProxiedAssetCache.pop()
+
+                ResolvedAsset = self._ProxiedAssetCache[0]
+
+            return ResolvedAsset
 
         DisplayTypes = {
             1: StatusDisplayType.name,
@@ -72,15 +104,10 @@ class DiscordPyBackend(RichPresenceBackend):
                       else DisplayTypes.get(1)
         
         LargeImage = RPCData.get("LargeImage")
-        LargeImage = self._AppAssets.get(LargeImage) \
-                     if LargeImage in self._AppAssets \
-                     else run_coroutine_threadsafe(self.Connection.proxy_external_application_assets(int(self.Config["AppID"]), \
-                                                   LargeImage), self.Connection.loop).result()[0] if LargeImage else None
+        LargeImage = AssetResolver(LargeImage) if isinstance(LargeImage, str) else None
+
         SmallImage = RPCData.get("SmallImage")
-        SmallImage = self._AppAssets.get(SmallImage) \
-                     if SmallImage in self._AppAssets \
-                     else run_coroutine_threadsafe(self.Connection.proxy_external_application_assets(int(self.Config["AppID"]), \
-                                                   SmallImage), self.Connection.loop).result()[0] if SmallImage else None
+        SmallImage = AssetResolver(SmallImage) if isinstance(SmallImage, str) else None
 
         Name = RPCData.get("Name")
         Name = Name if isinstance(Name, str) else "{name-error}"
