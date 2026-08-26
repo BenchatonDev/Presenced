@@ -33,15 +33,16 @@ class PyPresenceBackend(RichPresenceBackend):
         if not self.Connected: self._Connect()
 
         if self.Connected:
-            DisplayType : StatusDisplayType = StatusDisplayType.NAME
 
-            match RPCData.get("DisplayType"):
-                case 1:
-                    DisplayType = StatusDisplayType.NAME
-                case 2:
-                    DisplayType = StatusDisplayType.DETAILS
-                case 3:
-                    DisplayType = StatusDisplayType.STATE
+            DisplayTypes = {
+                1: StatusDisplayType.NAME,
+                2: StatusDisplayType.DETAILS,
+                3: StatusDisplayType.STATE
+            }
+
+            DisplayType = RPCData.get("DisplayType")
+            DisplayType = DisplayTypes.get(DisplayType) if isinstance(DisplayType, int) \
+                          else DisplayTypes.get(1)
 
             try:
                 self.Connection.update(

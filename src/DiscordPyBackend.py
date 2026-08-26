@@ -19,6 +19,11 @@ class DiscordPyBackend(RichPresenceBackend):
             self.Connected = True
             self._connecting = False
 
+        @self.Connection.event
+        async def on_disconnect():
+            self.Connected = False
+            self._connecting = False
+
         return
 
     def _Connect(self):
@@ -27,10 +32,11 @@ class DiscordPyBackend(RichPresenceBackend):
         try:
             self._connecting = True
             Thread(target=self.Connection.run, args=(self.Config["DiscordPyToken"],), \
-                   kwargs={"log_handler": None, "reconnect": True}, daemon=True).start() # type: ignore
+                   kwargs={"log_handler": None}, daemon=True).start()
         except:
-            pass
-
+            self.Connected = False
+            self._connecting = False
+            
         return
 
     def UpdatePresence(self, RPCData: dict):
@@ -44,27 +50,27 @@ class DiscordPyBackend(RichPresenceBackend):
                     if Asset.get("type") == 1:
                         self.AppAssets.setdefault(Asset.get("name"), Asset.get("id"))
 
-            DisplayType : StatusDisplayType = StatusDisplayType.name # type: ignore
+            DisplayTypes = {
+                1: StatusDisplayType.name,
+                2: StatusDisplayType.details,
+                3: StatusDisplayType.state
+            }
 
-            match RPCData.get("DisplayType"):
-                case 1:
-                    DisplayType = StatusDisplayType.name # type: ignore
-                case 2:
-                    DisplayType = StatusDisplayType.details
-                case 3:
-                    DisplayType = StatusDisplayType.state
+            DisplayType = RPCData.get("DisplayType")
+            DisplayType = DisplayTypes.get(DisplayType) if isinstance(DisplayType, int) \
+                          else DisplayTypes.get(1)
 
-            LargeImage = self.AppAssets.get(RPCData.get("LargeImage")) \
-                         if RPCData.get("LargeImage") in self.AppAssets \
+            LargeImage = RPCData.get("LargeImage")
+            LargeImage = self.AppAssets.get(LargeImage) \
+                         if LargeImage in self.AppAssets \
                          else run_coroutine_threadsafe(self.Connection.proxy_external_application_assets(int(self.Config["AppID"]), \
-                                                       RPCData.get("LargeImage")), self.Connection.loop).result()[0] \
-                         if RPCData.get("LargeImage") else None
+                                                       LargeImage), self.Connection.loop).result()[0] if LargeImage else None
 
-            SmallImage = self.AppAssets.get(RPCData.get("SmallImage")) \
-                         if RPCData.get("SmallImage") in self.AppAssets \
+            SmallImage = RPCData.get("SmallImage")
+            SmallImage = self.AppAssets.get(SmallImage) \
+                         if SmallImage in self.AppAssets \
                          else run_coroutine_threadsafe(self.Connection.proxy_external_application_assets(int(self.Config["AppID"]), \
-                                                       RPCData.get("SmallImage")), self.Connection.loop).result()[0] \
-                         if RPCData.get("SmallImage") else None
+                                                       SmallImage), self.Connection.loop).result()[0] if SmallImage else None
             
             PresencedRPC = Activity(
                 # Setup Stuff
@@ -98,8 +104,9 @@ class DiscordPyBackend(RichPresenceBackend):
         # Might also just be the most useless comment inside
         # This project, at the time of writing at least >;(
 
+        # Correction, not trivial at all, this thing is a nightmare
+        # I can't fucking understand how to solve, god damn it
         if self.Connected and not self.Connection.is_closed():
             self.Connection.loop.call_soon_threadsafe(create_task, self.Connection.close())
-            self.Connected = False
 
         return
