@@ -15,6 +15,14 @@ class DiscordPyBackend(RichPresenceBackend):
         self._Connecting = False
         self._AppAssets = {}
 
+        return
+
+    def _Connect(self):
+        if self.Connected or self._Connecting: return
+
+        if self.Connection is None or self.Connection.is_closed():
+            self.Connection = Client()
+
         @self.Connection.event
         async def on_ready():
             self.Connected = True
@@ -24,13 +32,6 @@ class DiscordPyBackend(RichPresenceBackend):
         async def on_disconnect():
             self.Connected = False
             self._Connecting = False
-
-            self.Connection = Client()
-
-        return
-
-    def _Connect(self):
-        if self.Connected or self._Connecting: return
 
         try:
             self._Connecting = True
