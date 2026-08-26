@@ -10,11 +10,17 @@
 Presenced is an hopefully flexible and customizable Discord Rich Presence app for homebrewed consoles writen in python. Originally created to run on an headless computer as self-bot, it's not a self-bot by default since such things are against the Discord TOS and use at your own risk even if the risk of your account being banned is low it's not 0, which means you needd, by default, to have a Discord client opened alongside Presenced to use it.
 
 # TODO:
-- Make the `"{Client}Format"` fields in the Default config auto generare at runtime
-- Make the `SanitizerTM()` run faster (Not necessary per say since it runs once at the start end never again + I have no idea how to do that)
-- Game icons on PS3, no really
-- Better quality appAssets
-- Decouple static icons from the default AppID (I already have a system to do that but I'd like better assets first)
+- `General`:
+  - Make the `"{Client}Format"` fields in the Default config auto generare at runtime
+  - Make the `SanitizerTM()` run faster (Not necessary per say since it runs once at the start end never again + I have no idea how to do that)
+  - Decouple static icons from the default AppID (I already have a system to do that but I'd like better assets first)
+  - Better quality appAssets
+- `PS3`:
+  - Game icons, no really
+  - PS2 classics
+- `Wii U`:
+  - Don't drop connection on app change
+  - Don't drop connection when in Miiverse
 
 # Requirements:
 
