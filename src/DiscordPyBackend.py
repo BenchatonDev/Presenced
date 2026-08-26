@@ -2,18 +2,28 @@ from RichPresenceBackend import RichPresenceBackend
 from discord import Client, Activity, ActivityType, \
                     ActivityAssets, StatusDisplayType, \
                     ActivityTimestamps, ApplicationAsset
-from asyncio import run_coroutine_threadsafe, create_task
+from asyncio import run_coroutine_threadsafe, run
 from datetime import datetime, timezone
 from threading import Thread
+from copy import deepcopy
 
 class DiscordPyBackend(RichPresenceBackend):
 
     def __init__(self, Config: dict):
         super().__init__(Config)
         self.Connection = Client()
-        
+
+        self._ProxiedAssetCache = []
         self._Connecting = False
+        self._RPCDataCache = {}
         self._AppAssets = {}
+
+        # Moved this here cuz it only need to run once + that's one less if statement yipee
+        TmpAppAssets = run(self.Connection.http.get_app_assets(int(self.Config["AppID"])))
+        for Asset in TmpAppAssets:
+            if Asset.get("type") == 1:
+                self._AppAssets.setdefault(Asset.get("name"), Asset.get("id"))
+        run(self.Connection.close())
 
         return
 
@@ -27,6 +37,11 @@ class DiscordPyBackend(RichPresenceBackend):
         async def on_ready():
             self.Connected = True
             self._Connecting = False
+
+            if self._RPCDataCache:
+                PresencedRPC = self._GenerateActivity(self._RPCDataCache)
+
+                await self.Connection.change_presence(activity=PresencedRPC)
 
         @self.Connection.event
         async def on_disconnect():
@@ -44,63 +59,58 @@ class DiscordPyBackend(RichPresenceBackend):
             
         return
 
+    def _GenerateActivity(self, RPCData: dict):
+
+        DisplayTypes = {
+            1: StatusDisplayType.name,
+            2: StatusDisplayType.details,
+            3: StatusDisplayType.state
+        }
+
+        DisplayType = RPCData.get("DisplayType")
+        DisplayType = DisplayTypes.get(DisplayType) if isinstance(DisplayType, int) \
+                      else DisplayTypes.get(1)
+        
+        LargeImage = RPCData.get("LargeImage")
+        LargeImage = self._AppAssets.get(LargeImage) \
+                     if LargeImage in self._AppAssets \
+                     else run_coroutine_threadsafe(self.Connection.proxy_external_application_assets(int(self.Config["AppID"]), \
+                                                   LargeImage), self.Connection.loop).result()[0] if LargeImage else None
+        SmallImage = RPCData.get("SmallImage")
+        SmallImage = self._AppAssets.get(SmallImage) \
+                     if SmallImage in self._AppAssets \
+                     else run_coroutine_threadsafe(self.Connection.proxy_external_application_assets(int(self.Config["AppID"]), \
+                                                   SmallImage), self.Connection.loop).result()[0] if SmallImage else None
+
+        Name = RPCData.get("Name")
+        Name = Name if isinstance(Name, str) else "{name-error}"
+
+        StartTime = RPCData.get("StartTime")
+        StartTime = StartTime if isinstance(StartTime, (int, float)) else 0
+
+        return Activity(
+            # Setup Stuff
+            type=ActivityType.playing,
+            status_display_type=DisplayType,
+            application_id=int(self.Config["AppID"]),
+            # Actuall presence
+            timestamps=ActivityTimestamps(start=datetime.fromtimestamp(StartTime, tz=timezone.utc)),
+            name=Name,
+            details=RPCData.get("Details"),
+            state=RPCData.get("State"),
+            assets=ActivityAssets(
+                large_image=LargeImage,
+                large_text=RPCData.get("LargeText"),
+                small_image=SmallImage,
+                small_text=RPCData.get("SmallText"),
+            )
+        )
+
     def UpdatePresence(self, RPCData: dict):
-        if not self.Connected: self._Connect()
+        if not self.Connected: self._Connect(); self._RPCDataCache = deepcopy(RPCData)
 
         if self.Connected:
-            if not self._AppAssets:
-                TmpAppAssets = run_coroutine_threadsafe(self.Connection.http.get_app_assets(int(self.Config["AppID"])), \
-                                                        self.Connection.loop).result()
-                for Asset in TmpAppAssets:
-                    if Asset.get("type") == 1:
-                        self._AppAssets.setdefault(Asset.get("name"), Asset.get("id"))
-
-            DisplayTypes = {
-                1: StatusDisplayType.name,
-                2: StatusDisplayType.details,
-                3: StatusDisplayType.state
-            }
-
-            DisplayType = RPCData.get("DisplayType")
-            DisplayType = DisplayTypes.get(DisplayType) if isinstance(DisplayType, int) \
-                          else DisplayTypes.get(1)
-
-            LargeImage = RPCData.get("LargeImage")
-            LargeImage = self._AppAssets.get(LargeImage) \
-                         if LargeImage in self._AppAssets \
-                         else run_coroutine_threadsafe(self.Connection.proxy_external_application_assets(int(self.Config["AppID"]), \
-                                                       LargeImage), self.Connection.loop).result()[0] if LargeImage else None
-
-            SmallImage = RPCData.get("SmallImage")
-            SmallImage = self._AppAssets.get(SmallImage) \
-                         if SmallImage in self._AppAssets \
-                         else run_coroutine_threadsafe(self.Connection.proxy_external_application_assets(int(self.Config["AppID"]), \
-                                                       SmallImage), self.Connection.loop).result()[0] if SmallImage else None
-
-            Name = RPCData.get("Name")
-            Name = Name if isinstance(Name, str) else "{name-error}"
-
-            StartTime = RPCData.get("StartTime")
-            StartTime = StartTime if isinstance(StartTime, (int, float)) else 0
-
-            PresencedRPC = Activity(
-                # Setup Stuff
-                type=ActivityType.playing,
-                status_display_type=DisplayType,
-                application_id=int(self.Config["AppID"]),
-
-                # Actuall presence
-                timestamps=ActivityTimestamps(start=datetime.fromtimestamp(StartTime, tz=timezone.utc)),
-                name=Name,
-                details=RPCData.get("Details"),
-                state=RPCData.get("State"),
-                assets=ActivityAssets(
-                    large_image=LargeImage,
-                    large_text=RPCData.get("LargeText"),
-                    small_image=SmallImage,
-                    small_text=RPCData.get("SmallText"),
-                )
-            )
+            PresencedRPC = self._GenerateActivity(RPCData)
 
             run_coroutine_threadsafe(self.Connection.change_presence(activity=PresencedRPC), self.Connection.loop)
 
@@ -117,6 +127,9 @@ class DiscordPyBackend(RichPresenceBackend):
 
         # Correction, not trivial at all, this thing is a nightmare
         # I can't fucking understand how to solve, god damn it
+
+        # I just needed to create a new client each time, took me
+        # Way too long to figure out but it works now so Yipeee
         if self.Connected and not self.Connection.is_closed():
             run_coroutine_threadsafe(self.Connection.close(), self.Connection.loop)
 
