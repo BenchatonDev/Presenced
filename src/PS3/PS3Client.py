@@ -13,11 +13,8 @@ class PS3Client(ConsoleClient):
 
     def pingConsole(self):
         if ping(self.Config["PS3Address"], privileged=False, interval=0, timeout=1).is_alive:
-            SmanHTML = None
-
             try:
-                SmanHTML = get(f"http://{self.Config["PS3Address"]}", headers=RequestHeaders, timeout=1)
-                SmanHTML = SmanHTML.text
+                get(f"http://{self.Config["PS3Address"]}", headers=RequestHeaders, timeout=1)
 
             except:
                 with ConsoleClientLock:
@@ -30,6 +27,8 @@ class PS3Client(ConsoleClient):
                 with ConsoleClientLock:
                     if self not in ActiveClients: ActiveClients.insert(0, self); \
                        self.ClientData["AppStartTime"] = int(datetime.now(timezone.utc).timestamp())
+
+                SmanHTML = get(f"http://{self.Config["PS3Address"]}/cpursx.ps3?/sman.ps3", headers=RequestHeaders).text
 
                 self.ClientData["OldConsoleData"] = deepcopy(self.ClientData["ConsoleData"])
                 self.ClientData["ConsoleData"] = SmanHTMLParser(SmanHTML)
