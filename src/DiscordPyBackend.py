@@ -71,6 +71,12 @@ class DiscordPyBackend(RichPresenceBackend):
                          if SmallImage in self.AppAssets \
                          else run_coroutine_threadsafe(self.Connection.proxy_external_application_assets(int(self.Config["AppID"]), \
                                                        SmallImage), self.Connection.loop).result()[0] if SmallImage else None
+
+            Name = RPCData.get("Name")
+            Name = Name if isinstance(Name, str) else "{name-error}"
+
+            StartTime = RPCData.get("StartTime")
+            StartTime = StartTime if isinstance(StartTime, (int, float)) else 0
             
             PresencedRPC = Activity(
                 # Setup Stuff
@@ -79,8 +85,8 @@ class DiscordPyBackend(RichPresenceBackend):
                 application_id=int(self.Config["AppID"]),
 
                 # Actuall presence
-                timestamps=ActivityTimestamps(start=datetime.fromtimestamp(RPCData.get("StartTime"), tz=timezone.utc)), # type: ignore
-                name=RPCData.get("Name"), # type: ignore
+                timestamps=ActivityTimestamps(start=datetime.fromtimestamp(StartTime, tz=timezone.utc)),
+                name=Name,
                 details=RPCData.get("Details"),
                 state=RPCData.get("State"),
                 assets=ActivityAssets(
