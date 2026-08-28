@@ -9,7 +9,7 @@
 
 Presenced is an hopefully flexible and customizable Discord Rich Presence app for homebrewed consoles writen in python meant to run as a background service. Originally created to run on an headless computer as self-bot, it's not a self-bot by default since such things are against the Discord TOS and thus `Use at own risk` which means you need, by default, to have a Discord client running alongside Presenced to use it.
 
-> [!Icons]
+> [!Note]
 > While the Wii U database should hopefully be complete enough to cover every game you could imagine, it's not the case for PS3 so feel free to contribute to the PresencedPS3-DB whose link is down bellow
 
 # TODO:
