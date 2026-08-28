@@ -145,12 +145,12 @@ def SanitizerTM(Config: dict):
             for Format, Value in DefaultInatorDefaults["Presence"].items()
                 if Format.endswith("Format") and isinstance(Value, dict)
             for Presence in 
-                ((Config["Presence"][Format], "DisplayType", "in", range(1, 3), DEFAULT_CONFIG["Presence"][Format]["DisplayType"]),
+                ((Config["Presence"][Format], "DisplayType", "in", range(1, 4), DEFAULT_CONFIG["Presence"][Format]["DisplayType"]),
                 (Config["Presence"][Format], "AppName", "!=", "", DEFAULT_CONFIG["Presence"][Format]["AppName"]),
                 (Config["Presence"][Format], "ImageBigType", "!=", "", DEFAULT_CONFIG["Presence"][Format]["ImageBigType"]))
         ]
         TheCheckListTM += [
-            (Config["ClientConfig"]["WiiU"], "UDPPort", "in", range(0, 65535), DEFAULT_CONFIG["ClientConfig"]["WiiU"]["UDPPort"])
+            (Config["ClientConfig"]["WiiU"], "UDPPort", "in", range(0, 65536), DEFAULT_CONFIG["ClientConfig"]["WiiU"]["UDPPort"])
         ]
 
         # Just a vert dumb switch statement to apply the rules, you have to think in reverse
