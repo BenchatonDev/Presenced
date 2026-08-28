@@ -1,7 +1,8 @@
 from ConsoleClient import ActiveClients, ConsoleClientLock, ConsoleClient, RPCFormat
+from datetime import datetime, timezone
 from .SmanParser import SmanHTMLParser
 from PresencedIcons import getIcon
-from datetime import datetime, timezone
+from .AppIcon import getAppIcon
 from icmplib import ping
 from copy import deepcopy
 from requests import get
@@ -62,8 +63,8 @@ class PS3Client(ConsoleClient):
         }
 
         ImageRules = {
-            "image_app": lambda : getIcon("Unknown"), # URL resolved by an helper function I have yet to implement
-            "image_console": lambda : getIcon("PS3"), # Change that to a URL or asset name if you ever change the AppID
+            "image_app": lambda : getAppIcon(self.ClientData["ConsoleData"].get("TitleID")),
+            "image_console": lambda : getIcon("PS3"),
             "image_network": lambda : getIcon("PlayStationN") if self.Config.get("NetworkName") == "PSN" else getIcon("Unknown")
         }
 

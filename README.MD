@@ -19,8 +19,7 @@ Presenced is an hopefully flexible and customizable Discord Rich Presence app fo
   - Decouple static icons from the default AppID (I already have a system to do that but I'd like better assets first)
   - Better quality appAssets
 - `PS3`:
-  - Game icons, no really
-  - PS2 classics
+  - PS2 classics Support
 - `Wii U`:
   - Don't drop connection on app change
   - Don't drop connection when in Miiverse
