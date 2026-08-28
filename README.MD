@@ -7,7 +7,10 @@
     A configurable Rich Presence for homebrewed consoles
 </h1>
 
-Presenced is an hopefully flexible and customizable Discord Rich Presence app for homebrewed consoles writen in python. Originally created to run on an headless computer as self-bot, it's not a self-bot by default since such things are against the Discord TOS and use at your own risk even if the risk of your account being banned is low it's not 0, which means you needd, by default, to have a Discord client opened alongside Presenced to use it.
+Presenced is an hopefully flexible and customizable Discord Rich Presence app for homebrewed consoles writen in python meant to run as a background service. Originally created to run on an headless computer as self-bot, it's not a self-bot by default since such things are against the Discord TOS and thus `Use at own risk` which means you need, by default, to have a Discord client running alongside Presenced to use it.
+
+> [!Icons]
+> While the Wii U database should hopefully be complete enough to cover every game you could imagine, it's not the case for PS3 so feel free to contribute to the PresencedPS3-DB whose link is down bellow
 
 # TODO:
 - `General`:
@@ -80,6 +83,7 @@ The way the config file is structured and what values you can put in each field 
 # Game Icon databases
 
 - [`WiiU`](https://github.com/FlamingNineteen/RichPresenceWUPS-DB): Feel free to comtribute to the Game icon database over at [Flaming's repo](https://github.com/FlamingNineteen/RichPresenceWUPS-DB)
+- [`PS3`](https://github.com/BenchatonDev/PresencedPS3-DB): This database is very work in progress, any contributions to the [repo](https://github.com/BenchatonDev/PresencedPS3-DB) are welcome
 
 # Acknowledgements
 - [Zorua98741](https://github.com/zorua98741) Inspiration for this project, and WebManMOD's `CPURSX.PS3` scraping idea
